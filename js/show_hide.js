@@ -1,48 +1,46 @@
 $('#category').dropdown();
 $('#tag').dropdown();
+$('#categories_select').dropdown();
+$('#tags_select').dropdown();
+
+
+$(function(){
+	$("#close_product").click(function(){
+		$(".product_box").modal('hide');
+	});
+	$(".product_box").modal({
+		closable: true
+	});
+});  
+
     
+$('#featured_image').on('change', function() {
+	if (this.files && this.files[0]) {
+		var reader = new FileReader(); 
+		reader.onload = function(e) {
+			$('#uploadedImage').attr('src', e.target.result).show(); 
+		};
+		reader.readAsDataURL(this.files[0]); 
+	}
+});
 
-$('#add_product').click(function() {
-
-    $('#editProductButton').css({
-        'display': 'none',  
-      
-    });
-    $('#addProductButton').css({
-        'display': 'block',  
-      
-    });
-    });
-
-    $(function(){
-        $("#add_product").click(function(){
-            $(".product_box").modal('show');
+$('#gallery').on('change', function() {
+    $('#galleryPreviewContainer').empty();
+    
+    if (this.files) {
+        for (let i = 0; i < this.files.length; i++) {
+            let file = this.files[i];
+            let reader = new FileReader();
             
-            $('#saveProduct')[0].reset(); 
-    
-    
-            $('#errMessage_add').addClass('d-none');
-            $('#err_valid_Message_product').addClass('d-none');
-            $('#okMessage_product').addClass('d-none');
-            $('#err_valid_Message_price').addClass('d-none');
-    
-            $('#uploadedImage').hide();
-            $('#galleryPreviewContainer').hide();
-            $('#required').addClass('d-none');
-            $('#checkstring').addClass('d-none');
-            $('#checksku').addClass('d-none');
-            $('#checknumber').addClass('d-none');
-            $('.product_added').removeClass('flex');
-    
-            $('#featured_image').val('');
-            $('#gallery').val('');
-        });
-    
-        $(".product_box").modal({
-            closable: true
-        });
-    });
-    
-
-
-
+            reader.onload = function(e) {
+                const img = $('<img>', {
+                    src: e.target.result,
+                    alt: 'Gallery Image',
+                });
+                $('#galleryPreviewContainer').append(img);
+                $('#galleryPreviewContainer').show();
+            };
+            reader.readAsDataURL(file); 
+        }
+    }
+});

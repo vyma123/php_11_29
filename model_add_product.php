@@ -1,20 +1,24 @@
 
-
-
+<div id="okMessageProduct2" class="ui success message">
+    <div class="header">
+    Product Update successfully.
+    </div>
+  </div>
 <div class="ui modal product_box">
 
-<div class="ui success message">
+
+<div id="noChanges" class="ui negative message d-none">
   <div class="header">
   No changes detected.
   </div>
-</div>
-
-<div class="ui success message product_added">
-
-  <div class="header">
-  Product added successfully.
   </div>
-</div>
+
+
+<div id="okMessageProduct" class="ui success message d-none">
+    <div class="header">
+    Product Added successfully.
+    </div>
+  </div>
 
   <!-- form -->
   <form class="ui form form_add_products" class='editProduct' id="saveProduct" onsubmit="return validateForm()" enctype="multipart/form-data">
@@ -28,13 +32,13 @@
     <div class="field">
       <label>SKU</label>
       <input type="text" name="sku" id="sku" placeholder="SKU">
-      <p class="required d-none" id="checksku">Don't allow special char.</p>
+      <p class="required d-none" id="checksku">Don't allow special char and Whitespace is not allowed..</p>
 
     </div>
     <div class="field">
       <label class="price_label">Price  </label>
       <input type="text" name="price" id="price" placeholder="Price">
-      <p class="required d-none" id="checknumber">Just allow number.</p>
+      <p class="required d-none" id="checknumber">Just allow number >= 0.</p>
 
     </div>
     <div class="box_file">
@@ -69,12 +73,15 @@
     <div id="load_property">
       <div class="field featured_image_box box_property">
         <label>Category</label>
-        <select id="categories_select" name="categories[]" multiple class="select_property"> 
+        <select id="categories_select" name="categories[]" multiple class="ui fluid dropdown select_property"> 
+        <option value="">Category</option>
       </select>
+     
       </div>
       <div class="field featured_image_box box_property">
         <label>Tag</label>
-        <select id="tags_select" name="tags[]" multiple class="select_property">
+        <select id="tags_select" name="tags[]" multiple class="ui fluid dropdown select_property">
+        <option value="">Select Tag</option>
     </select>
       </div>
     </div>
@@ -89,7 +96,7 @@
      <button id="editProductButton" class="ui positive button d-none" type="submit">Edit Product</button>
 
     </div>
-  </form>
+  </form> 
 </div>
 
 

@@ -82,6 +82,12 @@ function getRecordCount($pdo, $searchTermLike, $category = null, $tag = null, $d
         $conditions[] = "products.price BETWEEN :price_from AND :price_to";
         $params[':price_from'] = $price_from;
         $params[':price_to'] = $price_to;
+    } elseif ($price_from) {
+        $conditions[] = "products.price >= :price_from";
+        $params[':price_from'] = $price_from;
+    } elseif ($price_to) {
+        $conditions[] = "products.price <= :price_to";
+        $params[':price_to'] = $price_to;
     }
 
     if (count($conditions) > 0) {
@@ -288,6 +294,14 @@ function addProductProperties($product_id, $selected_properties, $pdo, $property
         ]);
     }
 }
+
+function getProperty($pdo, $type_) {
+    $query = "SELECT p.id, p.name_ FROM property p WHERE p.type_ = :type_";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([':type_' => $type_]);  // Truyền tham số :type_ vào câu truy vấn
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);  // Trả về kết quả
+}
+
 
 function getExistingProperty($product_id, object $pdo, $type_) {
     $propertySelected = "

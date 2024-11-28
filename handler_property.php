@@ -2,8 +2,6 @@
 require_once 'includes/db.inc.php';
 require_once './includes/functions.php';
 
-
-
 if (isset($_POST['save_property'])) {
 
     $category = test_input($_POST['category']);
@@ -95,22 +93,31 @@ if(!empty($errors)){
 
     
     $updated_categories_html = "";  
+    $updated_tags_html = "";  
 
-$query = "SELECT p.id, p.name_ FROM property p WHERE p.type_ = 'category'";
-$stmt = $pdo->prepare($query);
-$stmt->execute();
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$selectedCategory = $_GET['category'] ?? [];
 
-foreach ($categories as $category) {
-    $selected = in_array($category['id'], $selectedCategory) ? 'selected' : '';
-    $updated_categories_html .= "<option $selected value=\"{$category['id']}\">" . htmlspecialchars($category['name_']) . "</option>";
-}
+    $categories = getProperty($pdo, 'category');  
+    $tags = getProperty($pdo, 'tag');  
+
+    $selectedCategory = $_GET['category'] ?? [];
+    $selectedTag = $_GET['category'] ?? [];
+
+    foreach ($categories as $category) {
+        $selected = in_array($category['id'], $selectedCategory) ? 'selected' : '';
+        $updated_categories_html .= "<option $selected value=\"{$category['id']}\">" . htmlspecialchars($category['name_']) . "</option>";
+    }
+    foreach ($tags as $tag) {
+        $selected = in_array($tag['id'], $selectedTag) ? 'selected' : '';
+        $updated_tags_html .= "<option $selected value=\"{$tag['id']}\">" . htmlspecialchars($tag['name_']) . "</option>";
+    }
+
 
 
     $res = [
         'status' => 200,
         'categoriesHTML' => $updated_categories_html, 
+        'tagsHTML' => $updated_tags_html, 
+
     ];
 
     echo json_encode($res);

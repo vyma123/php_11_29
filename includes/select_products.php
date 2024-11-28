@@ -134,7 +134,7 @@ $stmt->bindParam(':per_page', $per_page_record, PDO::PARAM_INT);
 $stmt->execute();
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if (!empty($category) || !empty($tag) || (!empty($date_from) && !empty($date_to)) || (!empty($price_from) && !empty($price_to))) {
+if (!empty($category) || !empty($tag) || (!empty($date_from) || !empty($date_to)) || (!empty($price_from) || !empty($price_to))) {
     $total_records = getRecordCount($pdo, $searchTermLike, $category, $tag, $date_from, $date_to, $price_from, $price_to);
 } else {
     $count_query = "SELECT COUNT(*) FROM products WHERE product_name LIKE :search_term";
@@ -145,3 +145,4 @@ if (!empty($category) || !empty($tag) || (!empty($date_from) && !empty($date_to)
 }
 
 ?>
+

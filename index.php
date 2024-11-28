@@ -4,7 +4,6 @@ require_once './includes/functions.php';
 include './handler_property.php';
 include './includes/select_products.php';
 
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,16 +14,20 @@ include './includes/select_products.php';
 
     <link rel="stylesheet" href="style.css" type="text/css">
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"  />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
 
     <title>PHP1</title>
-
 </head>
 
+<style>
+    #tableID:hover .box_delete_buttons {
+    display: block !important;
+}
+
+</style>
 <body>
 
 
@@ -58,12 +61,12 @@ include './includes/select_products.php';
                     <option value="DESC">DESC</option>
                 </select>
 
+                
                 <div class="category_boxx category_update">
-                    
-                    <select name="category[]" id="category" class="ui fluid search dropdown select_category" multiple="">
-                        <option value="">Category</option>
-                        <?php
-                        $updated_categories_html = "";  
+
+                <select name="category[]" id="category" class="ui fluid search dropdown select_category" multiple="">
+                <option value="">Category</option>
+                <?php
                 $query = "SELECT p.id, p.name_ FROM property p WHERE p.type_ = 'category'";
                 $stmt = $pdo->prepare($query);
                 $stmt->execute();
@@ -71,16 +74,13 @@ include './includes/select_products.php';
                 $selectedCategory = $_GET['category'] ?? [];
                 foreach ($categories as $category) {
                     $selected = in_array($category['id'], $selectedCategory) ? 'selected' : '';
-                    $updated_categories_hml .= "<option $selected value=\"{$category['id']}\">" . htmlspecialchars($category['name_']) . "</option>";
+                    echo "<option $selected value=\"{$category['id']}\">" . htmlspecialchars($category['name_']) . "</option>";
                 }
-
                 ?>
-                        <?php echo $updated_categories_hml; ?>
-
         </select>
         </div>
         <div class="category_boxx tag_update">
-        <select name="category[]" id="tag" class="ui fluid search dropdown select_tag" name="tag[]" multiple="">
+        <select name="tag[]" id="tag" class="ui fluid search dropdown select_tag" name="tag[]" multiple="">
                 <option value="">Select Tag</option>
                 <?php
                 $query = "SELECT p.id, p.name_ FROM property p WHERE p.type_ = 'tag'";
@@ -97,14 +97,14 @@ include './includes/select_products.php';
             </div>
                 <div class="ui input"><input type="date" id="date_from"></div>
                 <div class="ui input"><input type="date" id="date_to"></div>
-                <div class="ui input"><input  onkeypress="return isNumber(event)" type="number" id="price_from" placeholder="price from"></div>
-                <div class="ui input"><input  onkeypress="return isNumber(event)" type="number" id="price_to" placeholder="price to"></div>
-                <button id="filter" onclick="applyFilters(event)" class="ui button">Filter</button>
+                <div class="ui input">
+                    <input class="" type="number" id="price_from" placeholder="price from">
+                </div>
+                <div class="ui input"><input  type="number" id="price_to" placeholder="price to"></div>
+                <button id="filter" onclick="handleFilterClick(event)" class="ui button">Filter</button>
             </div>
         </div>
      
-
-        
             <!-- table -->
          <div id="inputpage"></div>
          <div id="mytable" class="mytable">
@@ -151,9 +151,8 @@ include './includes/select_products.php';
                 <td><?php echo htmlspecialchars($row['date'])?></td>
                 <td class="product_name"><?php echo htmlspecialchars($row['product_name'] ?? '')?></td>
                 <td class="sku"><?php echo htmlspecialchars($row['sku'] ?? '')?></td>
-                <td class="price">$<?php echo htmlspecialchars($row['price'] ?? '')?></td>
+                <td>$<span class="price"><?php echo htmlspecialchars($row['price'] ?? '')?></span></td>
 
-                
                 <td class="featured_image">
                     <?php
                     if (filter_var($imageSrc, FILTER_VALIDATE_URL)) {
@@ -165,7 +164,6 @@ include './includes/select_products.php';
                 </td>
                 <?php
             $galleryImages = $row['gallery_images'];
-           if (!empty($galleryImages)) {
            $galleryImagesArray = explode(', ', $galleryImages);
            echo "<td  class='gallery'>
                 <div class='gallery-container'>";
@@ -175,11 +173,7 @@ include './includes/select_products.php';
            echo "
            </div>
            </td>";
-           } else {
-            echo "<td>
-            no gallery image
-        </td>";
-           } 
+           
              echo "<td class='category'>" . htmlspecialchars($row['categories'] ?? '') . "</td>";
              echo "<td class='tag'>" . htmlspecialchars($row['tags'] ?? '') . "</td>";
              ?>
@@ -193,7 +187,7 @@ include './includes/select_products.php';
                 <i class="trash icon"></i>
                 </a>
             </td>
-            </tr>
+            </tr> 
             <?php }}else {?>
                 <tr>
                     <td colspan="9" style="text-align: center;">Product not found</td>
@@ -203,7 +197,7 @@ include './includes/select_products.php';
             </table>
         </div>
 
-        <div id="paginationBox" class="pagination_box">
+<div id="paginationBox" class="pagination_box">
     <div class="ui pagination menu">
         <?php
         $total_pages = ceil($total_records / $per_page_record);
@@ -237,7 +231,8 @@ include './includes/select_products.php';
         ?>
     </div>
 </div>
-    </div>
+
+</div>
          
 
 
@@ -247,14 +242,14 @@ include './includes/select_products.php';
 <!-- pagination -->
 
 </section>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- <script src="./js/functions.js"></script> -->
-<!-- <script src="./js/script.js"> -->
-    <script src="./js/submit_property.js"></script>
-    <script src="./js/show_hide.js"></script>
-
-</script>
-
+    <script src="./js/submit_product.js" defer></script>
+    <script src="./js/edit_product.js" defer></script>
+    <script src="./js/submit_property.js" defer></script>
+    <script src="./js/show_hide.js" defer></script>
+    <script src="./js/filter.js" defer></script>
+    <script src="./js/pagination.js" defer></script>
+    <script src="./js/delete_product.js" defer></script>
+    <script src="./js/sync_products.js" defer></script>
 </body>
 </html>
 

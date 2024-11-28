@@ -12,7 +12,7 @@
   <div class="field">
     <label>Category</label>
     <input class="" id="input_cate" type="text" name="category" placeholder="Category 1, Category 2, ...">
-    <p class="required d-none" id="checkstring">Don't allow special char.</p>
+    <p class="required d-none" id="checkstringP">Don't allow special char.</p>
     <p class="required d-none" id="checkstringcomma"> input only contains commas (,).</p>
 
 
