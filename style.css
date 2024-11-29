@@ -7,9 +7,7 @@
     box-sizing: border-box;
 }
 
-#action_box .box_delete_buttons {
-    display: none ;
-}
+
 
 
 .container{
@@ -201,7 +199,7 @@
 }
 
 .prd_name{
-    width: 206px;
+    width: 300px;
 }
 
 table thead .date{
@@ -470,8 +468,21 @@ label{
     width: 100% !important;
 }
 
-.loading_{
+/* .loading_{
     position: absolute !important;
-    left: 30% !important;
+    left: 27.5% !important;
     top: 7% !important;
+} */
+
+
+#tableID:hover .box_delete_buttons {
+    display: block !important;
+}
+
+.left_header{
+    display: flex;
+}
+
+.hide {
+    display: none !important;
 }

@@ -65,7 +65,7 @@ foreach ($titles as $key => $title) {
             echo 'Product updated: ' . $name . PHP_EOL;
         } else {
             $sku = generateSKU($pdo);
-            echo 'Generated SKU: ' . $sku . PHP_EOL; // Debugging SKU generation
+            echo 'Generated SKU: ' . $sku . PHP_EOL; 
 
 
             $insertStmt = $pdo->prepare('INSERT INTO products (product_name, sku, price, featured_image, date) VALUES (:product_name, :sku, :price, :featured_image, now())');

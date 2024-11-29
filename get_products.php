@@ -32,13 +32,15 @@ foreach ($results as $row) {
     $galleryImages = $row['gallery_images'];
     $galleryImagesArray =  explode(', ', $galleryImages);
     $imageSrc = $row['featured_image'];
+    $date = DateTime::createFromFormat('Y-m-d', $row['date']);
+    $date = $date->format('d/m/Y');
 
     $content .= '<tbody id="productTableBody">';
     $content .= '<tr  data-id="' . $row['id'] . '">';
-    $content .= '<td>' . htmlspecialchars($row['date']) . '</td>';
-    $content .= '<td class="product_name">' . htmlspecialchars($row['product_name']) . '</td>';
+    $content .= '<td>' . htmlspecialchars($date) . '</td>';
+    $content .= '<td class="product_name">' . htmlspecialchars(htmlspecialchars_decode($row['product_name'] ?? ''), ENT_QUOTES, 'UTF-8') . '</td>';
     $content .= '<td class="sku">' . htmlspecialchars($row['sku']) . '</td>';
-    $content .= '<td>$<span class="price">' . htmlspecialchars($row['price']) . '</span></td>';
+    $content .= '<td>$<span class="price">' . htmlspecialchars(rtrim(rtrim($row['price'], '0'), '.') ?? '') . '</span></td>';
     $content .= '<td class="featured_image">';
 
 

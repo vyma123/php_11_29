@@ -44,3 +44,16 @@ $('#gallery').on('change', function() {
         }
     }
 });
+
+
+
+$(document).ready(function() {
+    console.log('ffshs');
+    
+    if ($('#productTableBody tr').children().length === 0) {
+        console.log('ffs');
+        $('.box_delete_buttons').hide();
+    }
+});
+
+

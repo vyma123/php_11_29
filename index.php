@@ -14,37 +14,26 @@ include './includes/select_products.php';
 
     <link rel="stylesheet" href="style.css" type="text/css">
 
-  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"  />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
 
     <title>PHP1</title>
 </head>
-
-<style>
-    #tableID:hover .box_delete_buttons {
-    display: block !important;
-}
-
-</style>
 <body>
-
-
 
 <?php include('model_add_product.php');?>
 <?php include('model_add_property.php');?>
 
-
     <section class="container">
-       <div class="ui centered inline loader loading_"></div>
-
+        
         <div class="product_header">
             <div class="product_header_top">
-                <div>
+                <div class="left_header">
                     <button id="add_product" class="ui primary button" >Add product</button>
                     <button id="add_property" class="ui button">Add property</button>
                     <a href="#" class="ui button" id="syncButton">Sync online</a>
+                    <div class="ui centered inline loader "></div>
                 </div>
                 <div class="ui icon input">
                     <input id="search" type="text"  oninput="loadApplyFilters(event)" placeholder="Search product..." value="">
@@ -61,7 +50,6 @@ include './includes/select_products.php';
                     <option value="DESC">DESC</option>
                 </select>
 
-                
                 <div class="category_boxx category_update">
 
                 <select name="category[]" id="category" class="ui fluid search dropdown select_category" multiple="">
@@ -140,18 +128,19 @@ include './includes/select_products.php';
             } else {    
                 $page = 1;
             }
-                
                 if (count($results) > 0) {
                     foreach ($results as $row){
                     $product_id = $row['id']; 
                     $imageSrc = $row['featured_image'];
+                    $date = DateTime::createFromFormat('Y-m-d', $row['date']);
+                    $date = $date->format('d/m/Y');
 
                     ?>
             <tr>
-                <td><?php echo htmlspecialchars($row['date'])?></td>
-                <td class="product_name"><?php echo htmlspecialchars($row['product_name'] ?? '')?></td>
+                <td><?php echo htmlspecialchars($date)?></td>
+                <td class="product_name"><?php echo htmlspecialchars(htmlspecialchars_decode($row['product_name'] ?? ''), ENT_QUOTES, 'UTF-8');?></td>
                 <td class="sku"><?php echo htmlspecialchars($row['sku'] ?? '')?></td>
-                <td>$<span class="price"><?php echo htmlspecialchars($row['price'] ?? '')?></span></td>
+                <td>$<span class="price"><?php echo htmlspecialchars(rtrim(rtrim($row['price'], '0'), '.') ?? '')?></span></td>
 
                 <td class="featured_image">
                     <?php
@@ -234,10 +223,7 @@ include './includes/select_products.php';
 
 </div>
          
-
-
 <input type="hidden" id="currentPage" value='<?php echo $page ?>'> 
-
 
 <!-- pagination -->
 

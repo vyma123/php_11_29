@@ -73,20 +73,31 @@ function getRecordCount($pdo, $searchTermLike, $category = null, $tag = null, $d
     }
 
     if ($date_from && $date_to) {
-        $conditions[] = "products.date BETWEEN :date_from AND :date_to";
+        $conditions[] = "products.date BETWEEN :date_from AND :date_to ";
         $params[':date_from'] = $date_from;
         $params[':date_to'] = $date_to;
+    } elseif ($date_from) {
+        $conditions[] = "products.date >= :date_from ";
+        $params[':date_from'] = $date_from;
+    } elseif ($date_to) {
+        $end_of_day = $date_to . ' 23:59:59';
+        $conditions[] = "products.date <= :end_of_day ";
+        $params[':end_of_day'] = $end_of_day;
     }
 
-    if ($price_from && $price_to) {
-        $conditions[] = "products.price BETWEEN :price_from AND :price_to";
+    if ($price_from !== '' && $price_to !== '') {
+        $conditions[] = "products.price BETWEEN :price_from AND :price_to ";
         $params[':price_from'] = $price_from;
         $params[':price_to'] = $price_to;
-    } elseif ($price_from) {
-        $conditions[] = "products.price >= :price_from";
+    } elseif ($price_from !== null) {
+        $conditions[] = "products.price >= :price_from ";
         $params[':price_from'] = $price_from;
-    } elseif ($price_to) {
-        $conditions[] = "products.price <= :price_to";
+    } elseif ($price_to !== null) {
+        if ($price_to == 0) {
+            $conditions[] = "products.price = 0 ";
+        } else {
+            $conditions[] = "products.price <= :price_to ";
+        }
         $params[':price_to'] = $price_to;
     }
 
@@ -208,8 +219,6 @@ function insert_product(object $pdo, string $product_name, string $sku, string $
         return $pdo->lastInsertId();
 }
 
-
-
 function add_product_property(PDO $pdo, int $product_id, int $property_id) {
     $query = "INSERT INTO product_property (product_id, property_id) VALUES (:product_id, :property_id);";
     $stmt = $pdo->prepare($query);
@@ -298,8 +307,8 @@ function addProductProperties($product_id, $selected_properties, $pdo, $property
 function getProperty($pdo, $type_) {
     $query = "SELECT p.id, p.name_ FROM property p WHERE p.type_ = :type_";
     $stmt = $pdo->prepare($query);
-    $stmt->execute([':type_' => $type_]);  // Truyền tham số :type_ vào câu truy vấn
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);  // Trả về kết quả
+    $stmt->execute([':type_' => $type_]); 
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);  
 }
 
 

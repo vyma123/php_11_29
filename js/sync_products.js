@@ -5,7 +5,6 @@ $(document).ready(function() {
 
         $('.ui.loader').addClass('active');
 
-        console.log('loading');
         $.ajax({
             url: 'sync_products.php',
             method: 'POST',
@@ -17,7 +16,6 @@ $(document).ready(function() {
                 console.log(response);
                 $('#tableID').load(location.href + " #tableID"); 
                 $('#paginationBox').load(location.href + " #paginationBox"); 
-
 
                 $('.category_update').load(location.href + " .category_update", function() {
                     $('#category').dropdown();

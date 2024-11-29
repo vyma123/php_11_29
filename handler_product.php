@@ -8,10 +8,6 @@ require_once './includes/select_products.php';
 $categories = getPropertiesByType($pdo, 'category');
 $tags = getPropertiesByType($pdo, 'tag');
 
-
-
-
-
 if (isset($_POST['action_type'])) {
     $action_type = $_POST['action_type'];
     
@@ -25,13 +21,10 @@ if (isset($_POST['action_type'])) {
          
         $selected_categories = isset($_POST['categories']) ? json_decode($_POST['categories'], true) : [];
         $selected_tags = isset($_POST['tags']) ? json_decode($_POST['tags'], true) : [];
-      
 
         if(!empty($sku)){
-
             $count = checkDuplicateSKU($sku, $product_id, $pdo);
 
-            
             if ($count > 0) {
                 $errors[] = [
                     'field' => 'exist',
@@ -44,7 +37,8 @@ if (isset($_POST['action_type'])) {
         if (!empty($errors)) {
             $res = [
                 'status' => '400',
-                'errors' => $errors
+                'errors' => $errors,
+                'product_id' => $product_id
             ];
             echo json_encode($res);
             return;
@@ -142,10 +136,13 @@ if (isset($_POST['action_type'])) {
         $tagsse = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         
+        $product_names = htmlspecialchars_decode($product_name ?? '', ENT_QUOTES);
+        
+
          $res = ['status' => 200, 'action' => 'edit', 
                   'message' => 'Product updated successfully',
                   'product_id' => $product_id,
-                  'product_name' => $product_name,
+                  'product_name' => $product_names,
                   'sku' => $sku,
                   'price' => $price,
                   'featured_image' => $featured_image, 
@@ -170,8 +167,6 @@ if (isset($_POST['action_type'])) {
         $errors = [];
         $responses = [];
 
-        
-
         if(!empty($sku)){
             $query = "SELECT COUNT(*) FROM products WHERE sku = :sku";
             $stmt = $pdo->prepare($query);
@@ -186,7 +181,6 @@ if (isset($_POST['action_type'])) {
                 ];
             }
         }
-
 
         if (!empty($errors)) {
             $res = [

@@ -13,21 +13,28 @@ if (isset($_POST['id'])) {
     $relatedStmt->bindParam(':product_id', $productId, PDO::PARAM_INT);
     $relatedStmt->execute();
     
+    
     try {
         $sql = "DELETE FROM products WHERE id = :id";
         $stmt = $pdo->prepare($sql);
-        
         $stmt->bindParam(':id', $productId, PDO::PARAM_INT);
+
         
         if ($stmt->execute()) {
-            echo 'success'; 
+            echo json_encode([
+                'status' => 'success',
+            ]);
         } else {
             echo 'error'; 
         }
     } catch (PDOException $e) {
         echo 'error: ' . $e->getMessage(); 
     }
+    exit;
 }
+
+
+
 
 
 

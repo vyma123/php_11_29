@@ -17,7 +17,6 @@ $(document).on('click', '.delete_button', function(e) {
         if (id) { productIds.push(id); }
     });
 
-    console.log(productIds);
     
 
     var filters = {
@@ -39,7 +38,9 @@ $(document).on('click', '.delete_button', function(e) {
             method: 'POST',
             data: { id: productId },
             success: function(response) {
-                if (response === 'success') {
+                var responseData = JSON.parse(response);
+
+                if (responseData.status === 'success') {
                     productRow.fadeOut(function() {
                         $(this).remove();
                         
@@ -51,9 +52,17 @@ $(document).on('click', '.delete_button', function(e) {
                         
                         
                     });
+
+                    
+                  console.log(responseData.count);
+                  if(responseData.count === 1){
+                    console.log('ok');
+                    
+                  }
                 } else {
                     alert('Error deleting the product');
                 }
+
             },
             error: function() {
                 alert('An error occurred');
@@ -100,8 +109,26 @@ $('#mytable').load(location.href + " #mytable", function() {
                 url: 'delete.php', 
                 type: 'POST',
                 success: function(response) {
+                var responseData = JSON.parse(response);
+                console.log(responseData.count);
+                
+                if(responseData.count === 0){
+                    console.log('ge');
+
+                    $('#tableID').on('mouseenter', function() {
+                        $(this).find('.box_delete_buttons').addClass('hide').removeClass('box_delete_buttons');
+    
+                    }).on('mouseleave', function() {
+                        $(this).find('.hide').addClass('box_delete_buttons').removeClass('hide');
+                    });
+                    
+                }
+
                     $('#tableID tbody').empty(); 
                     $('#paginationBox').empty();
+
+
+
                 },
                 
                 error: function(xhr, status, error) {

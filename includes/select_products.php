@@ -32,8 +32,6 @@ $price_to = $_GET['price_to'] ?? null;
 $category = isset($_GET['category']) ? $_GET['category'] : [];  
 $tag = isset($_GET['tag']) ? $_GET['tag'] : [];  
 
-
-
 $query = "
 SELECT products.*, 
     GROUP_CONCAT(DISTINCT p_tags.name_ SEPARATOR ', ') AS tags, 
@@ -48,7 +46,6 @@ LEFT JOIN product_property pp_gallery ON products.id = pp_gallery.product_id
 LEFT JOIN property g_images ON pp_gallery.property_id = g_images.id AND g_images.type_ = 'gallery'
 WHERE products.product_name LIKE :search_term
 ";
-
 
 if (!empty($category) && $category[0] != 0) {
     if (is_string($category)) {
@@ -89,11 +86,9 @@ if (!empty($price_to)) {
     $query .= " AND products.price <= :price_to";
 }
 
-
 $query .= " GROUP BY products.id 
             ORDER BY $sort_by $order 
             LIMIT :start_from, :per_page";
-
 
 $stmt = $pdo->prepare($query);
 
@@ -111,7 +106,6 @@ if (!empty($tag) && $tag[0] != 0) {
         $stmt->bindValue(':tag' . $index, $tag_id, PDO::PARAM_INT);
     }
 }
-
 
 if (!empty($date_from)) {
     $stmt->bindParam(':date_from', $date_from);

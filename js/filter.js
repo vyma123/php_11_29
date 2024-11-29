@@ -1,16 +1,7 @@
 let debounceTimeout;
 
-function handleFilterClick(event) {
-    console.log('d');
-    
-    if (validatePrice(event)) {
-        applyFilters(event); 
-    } else {
-        event.preventDefault(); 
-    }
-}
-
 function validatePrice(event) {
+    
 
     const priceInput1 = document.getElementById("price_from").value;
     const priceInput2 = document.getElementById("price_to").value;
@@ -26,7 +17,7 @@ if (priceInput1.trim() !== "" && !regexprice.test(priceInput1)) {
     $('#price_from').removeClass('err_border');  
 }
 
-if (priceInput2.trim() !== "" && !regexprice.test(priceInput2)) {
+if (priceInput2.trim() !== "" && !regexprice.test(priceInput2) || priceInput2.trim() !== "" && priceInput2.trim() <= 0) {
     $('#price_to').addClass('err_border');  
 
     hasError = true;
@@ -41,7 +32,20 @@ if (priceInput2.trim() !== "" && !regexprice.test(priceInput2)) {
     return true;
 }
 
+
+function handleFilterClick(event) {
+    console.log('bkdf');
+    
+    if (validatePrice(event)) {
+        applyFilters(event); 
+    } else {
+        event.preventDefault(); 
+    }
+}
+
+
 function loadApplyFilters(event) {
+
     
 	clearTimeout(debounceTimeout);
 
@@ -90,8 +94,26 @@ function applyFilters(event) {
             $('#inputpage').html(data.inputpage);
 
             console.log(data.totalProducts);
-            
-            
+
+            if(data.totalProducts === 0 ){
+                console.log('dghss');
+                
+                $('#tableID').on('mouseenter', function() {
+                    $(this).find('.box_delete_buttons').addClass('hide').removeClass('box_delete_buttons');
+
+                }).on('mouseleave', function() {
+                    $(this).find('.hide').addClass('box_delete_buttons').removeClass('hide');
+                });
+                
+            }else {
+                $('#tableID').on('mouseenter', function() {
+                    $(this).find('.hide').addClass('box_delete_buttons');
+
+                }).on('mouseleave', function() {
+                    $(this).find('.box_delete_buttons').addClass('hide');
+                });
+                
+            }
         },
         error: function(error) {
             console.error("Error loading data:", error);

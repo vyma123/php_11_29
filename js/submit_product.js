@@ -1,8 +1,8 @@
- 
+
+
 document.getElementById('add_product').addEventListener('click', function() {
     $('.ui.modal.product_box').modal('show');
 
-     
     $('#categories_select').dropdown('clear');
     $('#tags_select').dropdown('clear');   
 
@@ -28,6 +28,7 @@ document.getElementById('add_product').addEventListener('click', function() {
                 option.textContent = tag.name_;
                 tagsSelect.appendChild(option);
             });
+            
         })
         .catch(error => console.error('Error fetching categories and tags:', error));
 });
@@ -36,7 +37,7 @@ function validateForm(event) {
     const productName = document.getElementById("product_name").value;
     const sku = document.getElementById("sku").value;
     const priceInput = document.getElementById("price").value;
-    const regex = /^[\p{L}0-9-_– ]+$/u;
+    // const regex = /^[\p{L}0-9-_– ]+$/u;
     const regexsku = /^[\p{L}0-9-]+$/u;
     const regexprice = /^[0-9.]+$/;
 
@@ -45,14 +46,9 @@ function validateForm(event) {
     if (productName.trim() === "") {
         $('#noChanges').removeClass('flexWP');     
         $('#required').removeClass('d-none'); 
-        $('#checkstring').addClass('d-none');             
-        hasError = true;
-    } else if (!regex.test(productName)) {
-        $('#required').addClass('d-none');    
-        $('#checkstring').removeClass('d-none'); 
-        $('#noChanges').removeClass('flexWP');     
+        $('#checkstring').addClass('d-none');  
+    $('#okMessageProduct').removeClass('flexSPr');      
 
-             
         hasError = true;
     } else {
         $('#required').addClass('d-none');   
@@ -60,10 +56,16 @@ function validateForm(event) {
     }
 
 
-if (sku.trim() !== "" && !regexsku.test(sku)) {
-    $('#checksku').removeClass('d-none');  
+if (sku.trim() !== "" && !regexsku.test(sku.trim())) {
+    console.log('dfd');
+    
     $('#noChanges').addClass('d-none');  
+    $('#skuexist').addClass('d-none'); 
+    $('#checksku').removeClass('d-none');  
     $('#noChanges').removeClass('flexWP');      
+    $('#okMessageProduct').removeClass('flexSPr');    
+
+
     hasError = true;
 } else {
     $('#checksku').addClass('d-none');      
@@ -72,6 +74,7 @@ if (sku.trim() !== "" && !regexsku.test(sku)) {
 if (priceInput.trim() !== "" && !regexprice.test(priceInput)) {
     $('#checknumber').removeClass('d-none');  
     $('#noChanges').removeClass('flexWP');  
+    $('#okMessageProduct').removeClass('flexSPr');      
 
     hasError = true;
 } else {
@@ -202,11 +205,22 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
 		success: function(response) {
             
             var res = jQuery.parseJSON(response);
-		
 
-            if (res.status == 200) {
+            if(res.status == 400){
+				res.errors.forEach(function(error) {
+
+                if(error.field == 'exist'){
+                    console.log('menos2');
+                    $('#skuexist').removeClass('d-none'); 
+
+
+                }
+            })
+                    
+            }else if (res.status == 200) {
 				if(res.action == 'add'){
                    
+                    $('#skuexist').addClass('d-none'); 
                     $('#categories_select').dropdown('clear');
                     $('#tags_select').dropdown('clear');    
                     $('#okMessageProduct').removeClass('d-none');  
@@ -227,7 +241,7 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     
 				}else if(res.action == 'edit'){
 
-
+                    $('#skuexist').addClass('d-none'); 
                     $('#okMessageProduct2').removeClass('d-none');  
                     $('#okMessageProduct2').addClass('flexSPr'); 
 
