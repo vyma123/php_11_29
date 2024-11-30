@@ -29,7 +29,7 @@ $content .= "
 if (count($results) > 0) {
 foreach ($results as $row) {
     $product_id = $row['id'];
-    $galleryImages = $row['gallery_images'];
+    $galleryImages = $row['gallery_images'] ?? ''; 
     $galleryImagesArray =  explode(', ', $galleryImages);
     $imageSrc = $row['featured_image'];
     $date = DateTime::createFromFormat('Y-m-d', $row['date']);
@@ -46,18 +46,22 @@ foreach ($results as $row) {
 
     if (filter_var($imageSrc, FILTER_VALIDATE_URL)) {
         $content .= '<img height="30" src="' . $imageSrc. '">';
-    } else {
+    } else if(!empty($imageSrc)) {
         $content .= '<img height="30" src="./uploads/' . $imageSrc . '">';
+    }else{
+        $content .='<img height="30" src="">';
     }
-    
     $content .= '</td>';
     
-
+    if (!empty($galleryImages)) {
         $content .= '<td class="gallery"><div class="gallery-container">';
         foreach ($galleryImagesArray as $image) {
             $content .= '<img height="30" src="./uploads/' . $image . '">';
         }
         $content .= '</div></td>';
+    }else{
+       $content .= '<td></td>';
+    }
    
     $categorySelected = "SELECT p.name_ FROM product_property pp
     JOIN property p ON pp.property_id = p.id

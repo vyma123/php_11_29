@@ -48,11 +48,12 @@
       <label class="featured_image_label">Featured Image </label>
       <div  class="box_gallery">
         <div class="ui small image box_input">
-          <input accept="image/*" type="file" name="featured_image" id="featured_image" accept="image/*">
+        <input type="file" name="featured_image"  id="featured_image" accept="image/*">
         </div>
        
         <div id="resultContainer">
-          <img src="" alt="featured Image" id="uploadedImage"/>
+          <img src="" alt="featured Image"  id="uploadedImage"/>
+
         </div>
       </div>
     </div>

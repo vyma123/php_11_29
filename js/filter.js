@@ -34,7 +34,7 @@ if (priceInput2.trim() !== "" && !regexprice.test(priceInput2) || priceInput2.tr
 
 
 function handleFilterClick(event) {
-    console.log('bkdf');
+    console.log('cfv');
     
     if (validatePrice(event)) {
         applyFilters(event); 

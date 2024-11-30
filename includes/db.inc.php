@@ -1,7 +1,7 @@
 <?php 
 
 $host = 'localhost';
-$dbname = 'mavanvy_sql1';
+$dbname = 'mavanvy_sql';
 $dbusername = 'root';
 $dbpassword = '';
 

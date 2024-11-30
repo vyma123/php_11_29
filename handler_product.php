@@ -3,8 +3,6 @@ require_once './includes/db.inc.php';
 require_once './includes/functions.php';
 require_once './includes/select_products.php';
 
-
-
 $categories = getPropertiesByType($pdo, 'category');
 $tags = getPropertiesByType($pdo, 'tag');
 
@@ -155,6 +153,8 @@ if (isset($_POST['action_type'])) {
          return;
 
     } elseif ($action_type === 'add_product') {
+
+        
        
         $selected_categories = isset($_POST['categories']) ? json_decode($_POST['categories'], true) : [];
         $selected_tags = isset($_POST['tags']) ? json_decode($_POST['tags'], true) : [];
@@ -166,6 +166,8 @@ if (isset($_POST['action_type'])) {
         $gallery_images = $_FILES['gallery'];
         $errors = [];
         $responses = [];
+
+        
 
         if(!empty($sku)){
             $query = "SELECT COUNT(*) FROM products WHERE sku = :sku";

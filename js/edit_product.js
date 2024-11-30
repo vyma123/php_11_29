@@ -13,7 +13,11 @@ let selectedCategoryNames = [];
 let selectedTagNames = [];
 
         $(document).on('click', '.edit_button', function(e) {
+            console.log('cmn');
+            
             e.preventDefault();        
+            $('#featured_image').val(''); 
+            $('#gallery').val('');
         
             imagePaths = [];
             selectedCategoryNames = [];
@@ -26,7 +30,6 @@ let selectedTagNames = [];
             $('.ui.button[type="submit"]:contains("Update")').removeClass('d-none'); 
             $('#noChanges').removeClass('flexWP');    
             
-        
             $.ajax({
                 type: "GET",
                 url: "handler_product.php?product_id=" + product_id,
@@ -60,6 +63,7 @@ let selectedTagNames = [];
                         }else{
                             $('#uploadedImage').attr('src', '');
                             $('#uploadedImage').hide();
+                            
                         }
                         $('#galleryPreviewContainer').empty();
                         
@@ -71,7 +75,7 @@ let selectedTagNames = [];
                                 imagePaths.push(imageName);
                             }
                             
-                            var imgElement = $('<img>')
+                            var imgElement = $('<img id="galleryImage">')
                             .attr('src', imagePath)
                             .attr('alt', 'Gallery Image');  
                             
@@ -221,4 +225,6 @@ let selectedTagNames = [];
     });
     
                                  
+    console.log('cm');
+    
    

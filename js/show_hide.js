@@ -14,42 +14,90 @@ $(function(){
 });  
 
     
+
 $('#featured_image').on('change', function() {
-	if (this.files && this.files[0]) {
-		var reader = new FileReader(); 
-		reader.onload = function(e) {
-			$('#uploadedImage').attr('src', e.target.result).show(); 
-		};
-		reader.readAsDataURL(this.files[0]); 
-	}
+    const fileInput = this;
+    const file = fileInput.files[0];
+
+    const acceptedFormats = [
+        "image/png", 
+        "image/jpg", 
+        "image/jpeg", 
+        "image/gif", 
+        "image/webp", 
+        "image/bmp", 
+        "image/svg+xml", 
+        "image/tiff", 
+        "image/ico"
+    ];
+
+    if (!file) {
+        console.log("File selection was canceled.");
+        $('#uploadedImage').attr('src', '').hide(); 
+        return; 
+    }
+
+    const fileType = file.type;
+    if (acceptedFormats.includes(fileType)) {
+        const reader = new FileReader(); 
+        reader.onload = function(e) {
+            $('#uploadedImage').attr('src', e.target.result).show(); 
+        };
+        reader.readAsDataURL(file); 
+    } else {
+        alert("Invalid image format. Please upload a valid image file.");
+        fileInput.value = ""; 
+        $('#uploadedImage').attr('src', '').hide(); 
+    }
 });
 
-$('#gallery').on('change', function() {
-    $('#galleryPreviewContainer').empty();
-    
-    if (this.files) {
-        for (let i = 0; i < this.files.length; i++) {
-            let file = this.files[i];
-            let reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const img = $('<img>', {
-                    src: e.target.result,
-                    alt: 'Gallery Image',
-                });
-                $('#galleryPreviewContainer').append(img);
-                $('#galleryPreviewContainer').show();
+
+
+$('#gallery').on('change', function () {
+    const fileInput = this;
+    const files = fileInput.files;
+
+    if (!files.length) {
+        console.log("No files selected.");
+        $('#galleryImage').attr('src', '').hide(); 
+        return;
+    }
+
+    const acceptedFormats = [
+        "image/png",
+        "image/jpg",
+        "image/jpeg",
+        "image/gif",
+        "image/webp",
+        "image/bmp",
+        "image/svg+xml",
+        "image/tiff",
+        "image/ico",
+    ];
+
+    const galleryImage = $('#galleryPreviewContainer img'); 
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        if (acceptedFormats.includes(file.type)) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                galleryImage.attr('src', e.target.result).show(); 
             };
-            reader.readAsDataURL(file); 
+            reader.readAsDataURL(file);
+        } else {
+            alert("Invalid image format. Please upload valid image files.");
+            fileInput.value = ""; 
+            galleryImage.attr('src', '').hide(); 
+            break;
         }
     }
 });
 
 
 
-$(document).ready(function() {
-    console.log('ffshs');
-    
+$(document).ready(function() {    
     if ($('#productTableBody tr').children().length === 0) {
         console.log('ffs');
         $('.box_delete_buttons').hide();

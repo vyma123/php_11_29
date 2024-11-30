@@ -132,6 +132,7 @@ include './includes/select_products.php';
                     foreach ($results as $row){
                     $product_id = $row['id']; 
                     $imageSrc = $row['featured_image'];
+
                     $date = DateTime::createFromFormat('Y-m-d', $row['date']);
                     $date = $date->format('d/m/Y');
 
@@ -144,24 +145,31 @@ include './includes/select_products.php';
 
                 <td class="featured_image">
                     <?php
-                    if (filter_var($imageSrc, FILTER_VALIDATE_URL)) {
-                        echo '<img height="30" src="' . $imageSrc . '">';
+                    if (  trim($imageSrc) !== '') {
+                        if (filter_var($imageSrc, FILTER_VALIDATE_URL)) {
+                            echo '<img height="30" src="' . htmlspecialchars($imageSrc) . '">';
+                        } else {
+                            echo '<img height="30" src="./uploads/' . htmlspecialchars($imageSrc) . '">';
+                        }
                     } else {
-                        echo '<img height="30" src="./uploads/' . $imageSrc . '">';
+                        echo '<img height="30" src="">'; 
                     }
                     ?>
                 </td>
                 <?php
-            $galleryImages = $row['gallery_images'];
-           $galleryImagesArray = explode(', ', $galleryImages);
-           echo "<td  class='gallery'>
-                <div class='gallery-container'>";
-           foreach ($galleryImagesArray as $image) {
-            echo "<img  height='30' src='./uploads/" . $image . "'>";
+           $galleryImages = $row['gallery_images'] ?? ''; 
+           if (!empty($galleryImages)) {
+               $galleryImagesArray = explode(', ', $galleryImages);
+               echo "<td class='gallery'>
+                       <div class='gallery-container'>";
+               foreach ($galleryImagesArray as $image) {
+                   echo "<img height='30' src='./uploads/" . htmlspecialchars($image, ENT_QUOTES, 'UTF-8') . "'>";
+               }
+               echo "</div></td>";
+           } else {
+               echo '<td><img height="30" src=""></td>'; 
+
            }
-           echo "
-           </div>
-           </td>";
            
              echo "<td class='category'>" . htmlspecialchars($row['categories'] ?? '') . "</td>";
              echo "<td class='tag'>" . htmlspecialchars($row['tags'] ?? '') . "</td>";
