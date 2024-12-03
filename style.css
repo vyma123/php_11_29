@@ -80,9 +80,30 @@
 }
 
 .featured_image{
-    width: 300px !important;
+
+    width: 170px !important;
+    height: 50px;
+}
+.featured_image img{
+    object-fit: cover;
+    width: 170px;
+    height: 50px   ;
 }
 
+.gallery{
+
+    width: 178px !important;
+    height: 50px;
+}
+.gallery .gallery-container img{
+    object-fit: contain;
+    width: 178px;
+    height: 50px   ;
+}
+
+.empty_image{
+width: auto !important;
+}
 
 .box_button_add{
     display: flex ;
@@ -486,3 +507,23 @@ label{
 .hide {
     display: none !important;
 }
+
+.close_image{
+    display: none !important;
+    display: flex ;         
+    justify-content: flex-end ; 
+    align-items: center;  
+    cursor: pointer;
+ }
+ 
+ .close_gallery{
+    display: none !important;
+    display: flex ;         
+    justify-content: flex-end ; 
+    align-items: center;  
+    cursor: pointer;
+ }
+
+ .times.icon{
+    font-size: 2em !important;
+ }

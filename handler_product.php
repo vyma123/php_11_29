@@ -42,7 +42,10 @@ if (isset($_POST['action_type'])) {
             return;
         }
        
+            
             $featured_image = $_FILES['featured_image'];
+
+           
             $file_name = $featured_image['name'];
             $file_tmp_name = $featured_image['tmp_name'];
             
@@ -58,7 +61,15 @@ if (isset($_POST['action_type'])) {
                 }else{
                     update_product($pdo, $product_id ,$product_name, $sku, $price, $file_name);
                 }
-            } else{
+            } else if(isset($_POST['imageHidden']) && $_POST['imageHidden'] === 'true'){
+                if(empty($sku)){
+                    $sku = generateSKU($pdo);
+                    update_product($pdo, $product_id ,$product_name, $sku, $price, '');
+                }else{
+                    update_product($pdo, $product_id ,$product_name, $sku, $price, '');
+                }
+            }
+            else{
                 if(empty($sku)){
                     $sku = generateSKU($pdo);
                     update_product_no_image($pdo, $product_id ,$product_name, $sku, $price);
@@ -89,8 +100,12 @@ if (isset($_POST['action_type'])) {
                 }
             }
         }
+        else if(isset($_POST['imageHidden2']) && $_POST['imageHidden2'] === 'true'){
+            deleteProductGalleryProperties($product_id, $pdo);
+
         }
       
+        }
         if (!empty($selected_categories)) {
             $propertyType = 'category';  
            deleteProductProperty($product_id, $propertyType, $pdo);
@@ -136,6 +151,53 @@ if (isset($_POST['action_type'])) {
         
         $product_names = htmlspecialchars_decode($product_name ?? '', ENT_QUOTES);
         
+        $featured_imageN = null;
+
+        if (isset($featured_image) && $featured_image['error'] === UPLOAD_ERR_NO_FILE) {
+            $query = "SELECT featured_image FROM products WHERE id = :product_id";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result && isset($result['featured_image'])) {
+                $featured_imageN = $result['featured_image'];
+            } else {                
+                $featured_imageN = null; 
+            }
+        }
+
+
+        
+        
+        $gallery_images = [];
+
+        // Check if gallery images are uploaded
+        if (isset($_FILES['gallery']) && $_FILES['gallery']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+            // Process uploaded gallery images
+            foreach ($_FILES['gallery']['name'] as $index => $image_name) {
+                if ($_FILES['gallery']['error'][$index] === UPLOAD_ERR_OK) {
+                    // Assuming you're saving the file, or you might just need the image name
+                    $gallery_images[] = $image_name;  // You can save or process as needed
+                }
+            }
+        } else {
+            // If no gallery images are uploaded, check the database for existing ones
+            $namegallery = getNamePropertybyID($product_id, $pdo, 'gallery');
+            
+            if ($namegallery) {
+                // If gallery images exist in the database, extract them
+                foreach ($namegallery as $gallery_image) {
+                    $gallery_images[] = $gallery_image['name_'];  // Assuming 'name_' is the column for image name
+                }
+            } else {
+                // No gallery images found, set to null
+                $gallery_images = null;
+            }
+        }
+
+
 
          $res = ['status' => 200, 'action' => 'edit', 
                   'message' => 'Product updated successfully',
@@ -144,6 +206,8 @@ if (isset($_POST['action_type'])) {
                   'sku' => $sku,
                   'price' => $price,
                   'featured_image' => $featured_image, 
+                  'featured_imageN' => $featured_imageN, 
+                  'gallery_images' => $gallery_images, 
                   'gallery' => $gallery_images, 
                   'category' => $categoriesse, 
                   'tag' => $tagsse, 
@@ -153,8 +217,6 @@ if (isset($_POST['action_type'])) {
          return;
 
     } elseif ($action_type === 'add_product') {
-
-        
        
         $selected_categories = isset($_POST['categories']) ? json_decode($_POST['categories'], true) : [];
         $selected_tags = isset($_POST['tags']) ? json_decode($_POST['tags'], true) : [];
@@ -162,12 +224,12 @@ if (isset($_POST['action_type'])) {
         $product_name = test_input($_POST['product_name']);
         $sku = test_input($_POST['sku']);
         $price = test_input($_POST['price']);
+
         $featured_image = $_FILES['featured_image'];
+
         $gallery_images = $_FILES['gallery'];
         $errors = [];
         $responses = [];
-
-        
 
         if(!empty($sku)){
             $query = "SELECT COUNT(*) FROM products WHERE sku = :sku";

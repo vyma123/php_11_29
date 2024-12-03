@@ -47,21 +47,26 @@
     <div class="field featured_image_box">
       <label class="featured_image_label">Featured Image </label>
       <div  class="box_gallery">
-        <div class="ui small image box_input">
+        <div class="ui small image box_input box_featured">
         <input type="file" name="featured_image"  id="featured_image" accept="image/*">
+        </div>
+        <div class="close_image">
+          <i class="times icon"></i>
         </div>
        
         <div id="resultContainer">
           <img src="" alt="featured Image"  id="uploadedImage"/>
-
         </div>
       </div>
     </div>
     <div class="field featured_image_box">
       <label>Gallery<span class="required"></label>
       <div class="box_gallery">
-        <div class="ui small image box_input" >
+        <div class="ui small image box_input box_gallery" >
           <input accept="image/*" type="file" name="gallery[]" id="gallery" accept="image/*" multiple>
+        </div>
+        <div class="close_gallery">
+          <i class="times icon"></i>
         </div>
         <div class="img_box">
           <div id="galleryPreviewContainer">
@@ -88,6 +93,7 @@
     </select>
       </div>
     </div>
+    <input type="hidden" id="fileName" name="file_name" value="">
     <input type="hidden" id="product_id" name="product_id" value="">
     <input type="hidden" id="action_type" name="action_type" value="">
 

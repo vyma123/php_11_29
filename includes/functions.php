@@ -325,6 +325,19 @@ function getExistingProperty($product_id, object $pdo, $type_) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);  
 }
 
+function getNamePropertybyID($product_id, object $pdo, $type_) {
+    $propertySelected = "
+        SELECT p.name_ FROM product_property pp
+        JOIN property p ON pp.property_id = p.id
+        WHERE pp.product_id = :product_id AND p.type_ = :type_
+    ";
+    $stmt = $pdo->prepare($propertySelected);
+    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+    $stmt->bindParam(':type_', $type_, PDO::PARAM_STR); 
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);  
+}
+
 function getExistingGallery($product_id, object $pdo, $type_) {
     $selectColumn = $type_ === 'gallery' ? 'p.name_' : 'p.id';
 

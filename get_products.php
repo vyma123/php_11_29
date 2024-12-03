@@ -45,11 +45,11 @@ foreach ($results as $row) {
 
 
     if (filter_var($imageSrc, FILTER_VALIDATE_URL)) {
-        $content .= '<img height="30" src="' . $imageSrc. '">';
+        $content .= '<img src="' . $imageSrc. '">';
     } else if(!empty($imageSrc)) {
-        $content .= '<img height="30" src="./uploads/' . $imageSrc . '">';
+        $content .= '<img src="./uploads/' . $imageSrc . '">';
     }else{
-        $content .='<img height="30" src="">';
+        $content .='<img class="empty_image" src="">';
     }
     $content .= '</td>';
     
@@ -60,7 +60,7 @@ foreach ($results as $row) {
         }
         $content .= '</div></td>';
     }else{
-       $content .= '<td></td>';
+       $content .= '<td><img src=""></td>';
     }
    
     $categorySelected = "SELECT p.name_ FROM product_property pp

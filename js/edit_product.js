@@ -13,16 +13,14 @@ let selectedCategoryNames = [];
 let selectedTagNames = [];
 
         $(document).on('click', '.edit_button', function(e) {
-            console.log('cmn');
-            
-            e.preventDefault();        
+            e.preventDefault();   
+
             $('#featured_image').val(''); 
             $('#gallery').val('');
         
             imagePaths = [];
             selectedCategoryNames = [];
             selectedTagNames = [];
-
 
             var product_id = $(this).val();
             
@@ -56,31 +54,51 @@ let selectedTagNames = [];
                         
                         imageUrl = res.data.featured_image;
 
+                        
                         if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
                             $('#uploadedImage').attr('src', imageUrl);
-                        } else if(imageUrl) {
+                            $('.close_image').attr('style', 'display: flex !important');
+                            $('.ui.small.image.box_input.box_featured').attr('style', 'display: none !important');
+                        } else if(imageUrl && typeof imageUrl === 'string') {
+                            console.log('xs'+imageUrl);
                             $('#uploadedImage').attr('src', './uploads/' + imageUrl);
+                            $('.close_image').attr('style', 'display: flex !important');
+                            $('.ui.small.image.box_input.box_featured').attr('style', 'display: none !important');
+
                         }else{
+                            console.log('xss'+imageUrl);
                             $('#uploadedImage').attr('src', '');
                             $('#uploadedImage').hide();
-                            
+                            $('.close_image').attr('style', 'display: none !important');
+                            $('.ui.small.image.box_input.box_featured').attr('style', 'display: block !important');
                         }
+
                         $('#galleryPreviewContainer').empty();
                         
-                        
+                        if(res.gallery.length > 0){
+                        console.log(res.gallery);
+
                         $.each(res.gallery, function(index, image) {
                             var imagePath = './uploads/' + image.name_; 
                             var imageName = imagePath.replace('./uploads/', '');
                             if (!imagePaths.includes(imagePath)) {
                                 imagePaths.push(imageName);
                             }
-                            
+
+                            $('.close_gallery').attr('style', 'display: flex !important');
+                            $('.ui.small.image.box_input.box_gallery').attr('style', 'display: none !important');
+
                             var imgElement = $('<img id="galleryImage">')
                             .attr('src', imagePath)
                             .attr('alt', 'Gallery Image');  
                             
                             $('#galleryPreviewContainer').append(imgElement);
                         });
+                    }else{
+                        console.log('cmnt');
+                        $('.close_gallery').attr('style', 'display: none !important');
+                        $('.ui.small.image.box_input.box_gallery').attr('style', 'display: block !important');
+                    }
                         
                         $('#categories_select').dropdown('clear');
                         $('#categories_select').empty(); 
@@ -159,7 +177,6 @@ let selectedTagNames = [];
                 const normalizedOldCategory = oldCategory || [];
                 const normalizedOldTag = oldTag || [];
                 
-                const compareFeaturedImage = currentFeatured_image ? oldFeatured_image === currentFeatured_image : true;
                 console.log( normalizedOldCategory);
                 console.log( currentCategory);
 
@@ -167,7 +184,7 @@ let selectedTagNames = [];
                     if (oldProductName === currentProductName
                     && oldSku === currentSku
                     && oldPrice === currentPrice
-                    && compareFeaturedImage
+                    && oldFeatured_image === currentFeatured_image
                     && JSON.stringify(oldGallery) === JSON.stringify(currentGallery)      
                      && JSON.stringify(normalizedOldCategory) === JSON.stringify(currentCategory)
                      && JSON.stringify(normalizedOldTag) === JSON.stringify(currentTag)

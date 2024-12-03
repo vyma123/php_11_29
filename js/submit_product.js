@@ -2,7 +2,10 @@
 
 document.getElementById('add_product').addEventListener('click', function() {
     $('.ui.modal.product_box').modal('show');
-
+    $('.close_image').attr('style', 'display: none !important');
+    $('.ui.small.image.box_input.box_featured').attr('style', 'display: block !important');
+    $('.close_gallery').attr('style', 'display: none !important');
+    $('.ui.small.image.box_input.box_gallery').attr('style', 'display: block !important');
     $('#categories_select').dropdown('clear');
     $('#tags_select').dropdown('clear');   
 
@@ -147,8 +150,6 @@ $(document).on('click', '#editProductButton', function() {
 });
 
 
-
-
 $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(e){
 	e.preventDefault();
 
@@ -191,10 +192,25 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
       tags.push($(this).val());
     });
 
+    const uploadedImage = document.getElementById('uploadedImage');
+    if(uploadedImage){
+        let isHidden = uploadedImage.style.display === 'none';
+        formData.append('imageHidden', isHidden ? 'true' : 'false');
+        console.log('d'+isHidden);
+        
+    }
+    
+     const galleryImage = document.querySelector('#galleryPreviewContainer img');
+     if (galleryImage) {
+         let isHidden2 = galleryImage.style.display === 'none';
+         formData.append('imageHidden2', isHidden2 ? 'true' : 'false');
+        console.log(isHidden2);
+
+     }
 
     formData.append('categories', JSON.stringify(categories));
     formData.append('tags', JSON.stringify(tags));
-
+    
 	$.ajax({
 		type: "POST",
 		url: "handler_product.php",
@@ -212,8 +228,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                 if(error.field == 'exist'){
                     console.log('menos2');
                     $('#skuexist').removeClass('d-none'); 
-
-
                 }
             })
                     
@@ -269,10 +283,18 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                 var updatedProductName = res.product_name; 
                 var updatedSku = res.sku; 
                 var updatedPrice = res.price; 
+                var featuredImageN = res.featured_imageN;                
                 var featuredImage = res.featured_image.name;
                 var category = res.category;
                 var tag = res.tag;
                 var gallery = res.gallery;
+                // var galleryN = res.gallery_images;
+                // console.log('fc'+ galleryN);
+                // console.log('f'+ gallery);
+
+
+                
+
 
        $('#tableID').find('.edit_button').each(function() {
 
@@ -292,19 +314,24 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
             button.closest('tr').find('.sku').text(updatedSku);
             button.closest('tr').find('.price').text(parseFloat(updatedPrice));
 
-            if(featuredImage && featuredImage !== ''){
-                button.closest('tr').find('.featured_image img').attr('src', './uploads/' + featuredImage);
+            if((featuredImage && featuredImage !== '') || (featuredImageN && featuredImageN !== '')){
+
+                if(featuredImageN && featuredImageN !== ''){
+                
+                    button.closest('tr').find('.featured_image img').attr('src', './uploads/' + featuredImageN);
+                }else{
+                    button.closest('tr').find('.featured_image img').attr('src', './uploads/' + featuredImage);
+                }
+            }else{
+                button.closest('tr').find('.featured_image img').attr('src', '');
             }
 
-            if(gallery && Array.isArray(gallery.name) && gallery.name != ''){
+        if(gallery && gallery.name != ''){            
                 
-                
-                if (gallery && Array.isArray(gallery.name)) {
-
                     var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
                     galleryContainer.empty();  
                     
-                    gallery.name.forEach(function(image) {
+                    gallery.forEach(function(image) {
                         
                         var img = galleryContainer.find('img[src="./uploads/' + image + '"]');
                         
@@ -354,12 +381,16 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                             });
                     
                             const query = `index.php?${queryParams}`;
-                            $('#tableID').load(`${query} #tableID`);
-                            $('#paginationBox').load(`${query} #paginationBox`);
+                            $('#mytable').load(`${query} #mytable`);
                         }
                     }
                 });
-            }
+            
+        }
+            else{
+                var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
+                galleryContainer.empty();  
+                galleryContainer.append('<img class="empty_image" src="">');  
             }
 
         if (category && category.length > 0) {

@@ -147,12 +147,12 @@ include './includes/select_products.php';
                     <?php
                     if (  trim($imageSrc) !== '') {
                         if (filter_var($imageSrc, FILTER_VALIDATE_URL)) {
-                            echo '<img height="30" src="' . htmlspecialchars($imageSrc) . '">';
+                            echo '<img src="' . htmlspecialchars($imageSrc) . '">';
                         } else {
-                            echo '<img height="30" src="./uploads/' . htmlspecialchars($imageSrc) . '">';
+                            echo '<img src="./uploads/' . htmlspecialchars($imageSrc) . '">';
                         }
                     } else {
-                        echo '<img height="30" src="">'; 
+                        echo '<img class="empty_image" src="">'; 
                     }
                     ?>
                 </td>
@@ -163,11 +163,11 @@ include './includes/select_products.php';
                echo "<td class='gallery'>
                        <div class='gallery-container'>";
                foreach ($galleryImagesArray as $image) {
-                   echo "<img height='30' src='./uploads/" . htmlspecialchars($image, ENT_QUOTES, 'UTF-8') . "'>";
+                   echo "<img src='./uploads/" . htmlspecialchars($image, ENT_QUOTES, 'UTF-8') . "'>";
                }
                echo "</div></td>";
            } else {
-               echo '<td><img height="30" src=""></td>'; 
+               echo '<td><img src=""></td>'; 
 
            }
            
