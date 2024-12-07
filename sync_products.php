@@ -20,15 +20,16 @@ $titles = [];
 
 if ($crawler->filter('title')->count() > 0) {
     $titles[] = $crawler->filter('title')->text();
-    echo 'Page Title: ' . $titles;
+    $productId = $crawler->filter('div[exp_product]')->attr('exp_product');
+    preg_match('/productId=(\d+)/', $productId, $matches);
 } 
 
+$productId = isset($matches[1]) ? $matches[1] : null;
+echo 'Product ID: ' . $productId;
 
 $httpClient = new \Goutte\Client();
 
-
 use Stichoza\GoogleTranslate\GoogleTranslate;
-
 
 $response = $httpClient->request('GET', 'https://aliexpress.ru/item/1005007641037367.html?sku_id=12000041611596822');
 
@@ -116,29 +117,42 @@ foreach ($titles as $key => $title) {
     echo "Product Title: " . $title . PHP_EOL;
 
     foreach ($colorArray as $color) {
+
     $translatedColor = GoogleTranslate::trans($color, 'en', 'ru');
 
         foreach ($sizeArray as $size) {
             $name = $title . ' ' . $translatedColor . ' ' . $size;
             echo 'Name: ' . htmlspecialchars($name) . PHP_EOL;
             echo 'Image Src: ' . $featuredImageSrc . PHP_EOL;
-            
-            $checkStmt = $pdo->prepare('SELECT * FROM products WHERE product_name = :product_name');
-            $checkStmt->execute(['product_name' => htmlspecialchars($name)]);
-            $existingProduct = $checkStmt->fetch(); 
+
+            $productId++;
+
+            $checkStmt = $pdo->prepare('SELECT crawl_p_id FROM products WHERE crawl_p_id = :crawl_p_id');
+            $checkStmt->execute(['crawl_p_id' => $productId]); 
+            $existingProduct = $checkStmt->fetch();
 
             if ($existingProduct) {
-                $product_id = $existingProduct['id']; 
+
+                $checkStmt = $pdo->prepare('SELECT id FROM products WHERE crawl_p_id = :crawl_p_id');
+                $checkStmt->execute(['crawl_p_id' => $productId]); 
+                $product_id = $checkStmt->fetchColumn();
+
+                $sku = generateSKU($pdo);
+
                 deleteProductGalleryProperties($product_id, $pdo);
-                                $updateStmt = $pdo->prepare('UPDATE products 
-                                SET price = :price,
-                                    featured_image = :featured_image
-                                WHERE id = :id');
-                                $updateStmt->execute([
-                                'price' => $usdPrice,
-                                'featured_image' => $imageNameOnly,
-                                'id' => $product_id,
-                            ]);
+                $updateStmt = $pdo->prepare('UPDATE products 
+                SET product_name = :product_name, 
+                    sku = :sku,
+                    price = :price,
+                    featured_image = :featured_image
+                WHERE crawl_p_id = :crawl_p_id');
+                $updateStmt->execute([
+                'product_name' => $title,
+                'sku' => $sku,
+                'price' => $usdPrice,
+                'featured_image' => $imageNameOnly,
+                'crawl_p_id' => $productId,
+                ]);
 
                 foreach ($imageSrcGalleryArray as $galleryImageSrc) {
 
@@ -153,22 +167,20 @@ foreach ($titles as $key => $title) {
                         echo "Failed to save gallery image." . PHP_EOL;
                     }
                 }
-            }
 
-            if ($existingProduct) {
-                echo 'Product updated: ' . $name . PHP_EOL;
             } else {
                 $sku = generateSKU($pdo);
-                echo 'Generated SKU: ' . $sku . PHP_EOL;
+echo 'sddddddddddddddddddddd';
 
-                $insertStmt = $pdo->prepare('INSERT INTO products (product_name, sku, price, featured_image, date) VALUES (:product_name, :sku, :price, :featured_image, now())');
+                $insertStmt = $pdo->prepare('INSERT INTO products (crawl_p_id, product_name, sku, price, featured_image, date) VALUES (:crawl_p_id, :product_name, :sku, :price, :featured_image, now())');
+                echo $productId;
                 $insertStmt->execute([
+                    'crawl_p_id' => $productId,
                     'product_name' => htmlspecialchars($name),
                     'sku' => htmlspecialchars($sku),
                     'price' => $usdPrice,
                     'featured_image' => $imageNameOnly,
                 ]);
-                echo 'Product inserted: ' . $name . PHP_EOL;
                 $product_id = $pdo->lastInsertId();
 
                 foreach ($imageSrcGalleryArray as $galleryImageSrc) {
@@ -187,18 +199,6 @@ foreach ($titles as $key => $title) {
             }
         }
     }
-
-
-    
-
-
-
-
-
-
-
-
-
 }
 
 ?>
