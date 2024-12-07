@@ -47,7 +47,7 @@ foreach ($results as $row) {
     if (filter_var($imageSrc, FILTER_VALIDATE_URL)) {
         $content .= '<img src="' . $imageSrc. '">';
     } else if(!empty($imageSrc)) {
-        $content .= '<img src="./uploads/' . $imageSrc . '">';
+        $content .= '<img src="uploads/' . $imageSrc . '">';
     }else{
         $content .='<img class="empty_image" src="">';
     }
@@ -56,7 +56,7 @@ foreach ($results as $row) {
     if (!empty($galleryImages)) {
         $content .= '<td class="gallery"><div class="gallery-container">';
         foreach ($galleryImagesArray as $image) {
-            $content .= '<img height="30" src="./uploads/' . $image . '">';
+            $content .= '<img height="30" src="uploads/' . $image . '">';
         }
         $content .= '</div></td>';
     }else{

@@ -13,12 +13,10 @@ if (isset($_POST['id'])) {
     $relatedStmt->bindParam(':product_id', $productId, PDO::PARAM_INT);
     $relatedStmt->execute();
     
-    
     try {
         $sql = "DELETE FROM products WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':id', $productId, PDO::PARAM_INT);
-
         
         if ($stmt->execute()) {
             echo json_encode([

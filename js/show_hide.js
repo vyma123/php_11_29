@@ -3,17 +3,33 @@ $('#tag').dropdown();
 $('#categories_select').dropdown();
 $('#tags_select').dropdown();
 
-
 $(function(){
 	$("#close_product").click(function(){
 		$(".product_box").modal('hide');
+        $('#okMessageProduct').removeClass('flexSPr');   
+        $('#noChanges').removeClass('flexWP');  
+        $('#required_featured').addClass('d-none');
+        $('#required_gallery').addClass('d-none');
+
 	});
 	$(".product_box").modal({
 		closable: true
 	});
 });  
 
-    
+$(document).ready(function() {
+    $(".modals").click(function(event) {
+        if ($(event.target).is(".modals")) {
+             $('#errMessage').removeClass('flexWP'); 
+             $('#okMessage').removeClass('flexSP');    
+             $('#okMessageProduct').removeClass('flexSPr');     
+             $('#noChanges').removeClass('flexWP');  
+             $('#required_featured').addClass('d-none');
+             $('#required_gallery').addClass('d-none');
+
+        }
+    });
+});
 
 $('#featured_image').on('change', function() {
     const fileInput = this;
@@ -31,8 +47,6 @@ $('#featured_image').on('change', function() {
         "image/ico"
     ];
 
-
-
     if (!file) {
         console.log("File selection was canceled.");
         return; 
@@ -40,6 +54,8 @@ $('#featured_image').on('change', function() {
 
     const fileType = file.type;
     if (acceptedFormats.includes(fileType)) {
+        $('#required_featured').addClass('d-none');
+
         const reader = new FileReader(); 
         reader.onload = function(e) {
             $('#uploadedImage').attr('src', e.target.result).show(); 
@@ -49,11 +65,9 @@ $('#featured_image').on('change', function() {
         $('#fileName').val(file.name);
         $('.close_image').attr('style', 'display: flex !important');
         $('.ui.small.image.box_input.box_featured').attr('style', 'display: none !important');
-        
-        console.log('mnb');
-        
+
     } else {
-        alert("Invalid image format. Please upload a valid image file.");
+        $('#required_featured').removeClass('d-none');
         fileInput.value = ""; 
     }
 });
@@ -98,6 +112,7 @@ $('#gallery').on('change', function () {
 
         if (acceptedFormats.includes(file.type)) {
        $('#galleryPreviewContainer').attr('style', 'display: block !important');
+       $('#required_gallery').addClass('d-none');
 
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -113,7 +128,7 @@ $('#gallery').on('change', function () {
             };
             reader.readAsDataURL(file); 
         } else {
-            alert("Invalid image format. Please upload valid image files.");
+            $('#required_gallery').removeClass('d-none');
             fileInput.value = ""; 
             galleryPreviewContainer.empty(); 
             break;
@@ -136,7 +151,6 @@ $('.close_gallery').on('click', function() {
 
 $(document).ready(function() {    
     if ($('#productTableBody tr').children().length === 0) {
-        console.log('ffs');
         $('.box_delete_buttons').hide();
     }
 });

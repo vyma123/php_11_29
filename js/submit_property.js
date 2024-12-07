@@ -1,3 +1,11 @@
+const toast = document.getElementById("errMessage");
+
+
+const removeToast = (toast, className) => {
+    toast.classList.remove(className);
+    toast.classList.add("remove");
+};
+let toastTimeout = null; 
 
 $(function(){
 	$("#add_property").click(function(){
@@ -9,36 +17,42 @@ $(function(){
        $('#checkstringP').addClass('d-none');     
        $('#checkstring2').addClass('d-none');     
        $('#checkstringcomma').addClass('d-none');
-
        $('#checkstringcomma2').addClass('d-none');
+	});
+	
 
+    $("#close_property").click(function(){
+		$(".category_box").modal('hide');
+            $('#errMessage').removeClass('flexWP');  
+            $('#okMessage').removeClass('flexSP');     
 	});
 	$(".category_box").modal({
-		closable: true
+        closable: true
 	});
 });  
 
-$(function(){
-	$("#close_property").click(function(){
-		$(".category_box").modal('hide');
-	});
-	$(".category_box").modal({
-		closable: true
-	});
-}); 
     
 function validateFormProperty(event) {
+    
     const input_cate = document.getElementById("input_cate").value;
     const input_tag = document.getElementById("input_tag").value;
 
-
     const regex = /^[\p{L}0-9-_, ]*$/u;
+
+    $('#errMessage')
+    .removeClass('flexWP');
+           $('#okMessage').removeClass('flexSP');   
+
 
     let hasError = false;
 
     if (input_cate.trim() === "" && input_tag.trim() === "") {
-       console.log('sdd');
-       $('#errMessage').addClass('flexWP');     
+        
+    setTimeout(() => {
+        $('#errMessage').addClass('flexWP'); 
+        $('#okMessage').removeClass('flexSP');   
+    }, 200);
+
         hasError = true;
     } else{
         $('#errMessage').removeClass('flexWP');   
@@ -46,10 +60,10 @@ function validateFormProperty(event) {
 
     if (/^[, ]+$/.test(input_cate.trim())) {
         $('#checkstringcomma').removeClass('d-none');
+
         hasError = true;
     } else{
         $('#checkstringcomma').addClass('d-none');
-
     }
 
     if (/^[, ]+$/.test(input_tag.trim())) {
@@ -82,11 +96,13 @@ function validateFormProperty(event) {
     }
 
     if (!hasError) {
-        console.log('ok');
+        console.log('111');
+    setTimeout(() => {
         $('#okMessage').addClass('flexSP');   
         $('#checkstringcomma').addClass('d-none');
         $('#checkstringcomma2').addClass('d-none');
-
+    }, 200);
+    
         return true;
     }else{
 

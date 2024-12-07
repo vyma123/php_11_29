@@ -3,7 +3,6 @@ require_once './includes/db.inc.php';
 require_once './includes/functions.php';
 include './handler_property.php';
 include './includes/select_products.php';
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +25,6 @@ include './includes/select_products.php';
 <?php include('model_add_property.php');?>
 
     <section class="container">
-        
         <div class="product_header">
             <div class="product_header_top">
                 <div class="left_header">
@@ -146,11 +144,7 @@ include './includes/select_products.php';
                 <td class="featured_image">
                     <?php
                     if (  trim($imageSrc) !== '') {
-                        if (filter_var($imageSrc, FILTER_VALIDATE_URL)) {
-                            echo '<img src="' . htmlspecialchars($imageSrc) . '">';
-                        } else {
-                            echo '<img src="./uploads/' . htmlspecialchars($imageSrc) . '">';
-                        }
+                            echo '<img class="f_image" src="uploads/' . htmlspecialchars($imageSrc) . '">';
                     } else {
                         echo '<img class="empty_image" src="">'; 
                     }
@@ -163,12 +157,11 @@ include './includes/select_products.php';
                echo "<td class='gallery'>
                        <div class='gallery-container'>";
                foreach ($galleryImagesArray as $image) {
-                   echo "<img src='./uploads/" . htmlspecialchars($image, ENT_QUOTES, 'UTF-8') . "'>";
+                   echo "<img src='uploads/" . htmlspecialchars($image, ENT_QUOTES, 'UTF-8') . "'>";
                }
                echo "</div></td>";
            } else {
                echo '<td><img src=""></td>'; 
-
            }
            
              echo "<td class='category'>" . htmlspecialchars($row['categories'] ?? '') . "</td>";
@@ -228,12 +221,36 @@ include './includes/select_products.php';
         ?>
     </div>
 </div>
-
 </div>
          
 <input type="hidden" id="currentPage" value='<?php echo $page ?>'> 
 
 <!-- pagination -->
+
+
+<div class="overlay">
+    <!-- Hộp thoại xác nhận xóa -->
+    <div class="confirmation-dialog">
+        <div class="top_delete">
+            <div class="box_text_delete">
+                <div class="box_delete_icon">
+                    <i class="exclamation triangle icon"></i>
+                </div>
+                <div class="text_delete"> 
+                    <h3>Delete Confirmation</h3>
+                    <p class="one_delete">Are you sure you want to delete this item? This action cannot be undone.</p>
+                    <p class="all_delete">Are you sure you want to delete all items? This action cannot be undone.</p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom_delete">
+            <button class="confirm-no confirm">Cancel</button>
+            <button class="confirm-yes confirm">Delete</button>
+        </div>
+    </div>
+    </div>
+
+    
 
 </section>
     <script src="./js/submit_product.js" defer></script>

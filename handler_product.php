@@ -167,32 +167,24 @@ if (isset($_POST['action_type'])) {
                 $featured_imageN = null; 
             }
         }
-
-
         
         
         $gallery_images = [];
 
-        // Check if gallery images are uploaded
         if (isset($_FILES['gallery']) && $_FILES['gallery']['error'][0] !== UPLOAD_ERR_NO_FILE) {
-            // Process uploaded gallery images
             foreach ($_FILES['gallery']['name'] as $index => $image_name) {
                 if ($_FILES['gallery']['error'][$index] === UPLOAD_ERR_OK) {
-                    // Assuming you're saving the file, or you might just need the image name
-                    $gallery_images[] = $image_name;  // You can save or process as needed
+                    $gallery_images[] = $image_name;  
                 }
             }
         } else {
-            // If no gallery images are uploaded, check the database for existing ones
             $namegallery = getNamePropertybyID($product_id, $pdo, 'gallery');
             
             if ($namegallery) {
-                // If gallery images exist in the database, extract them
                 foreach ($namegallery as $gallery_image) {
-                    $gallery_images[] = $gallery_image['name_'];  // Assuming 'name_' is the column for image name
+                    $gallery_images[] = $gallery_image['name_'];  
                 }
             } else {
-                // No gallery images found, set to null
                 $gallery_images = null;
             }
         }

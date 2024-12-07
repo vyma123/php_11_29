@@ -1,6 +1,42 @@
+const confirm_yes = $('.confirm-yes');
+const confirm_no = $('.confirm-no'); 
 
 
-$(document).on('click', '.delete_button', function(e) {
+
+
+$(document).off('click', 'edit_button').on('click', '.delete_button', function(e) {
+    e.preventDefault();
+
+
+    $('.confirmation-dialog').removeClass('show'); 
+    $('.overlay').addClass('show'); 
+
+    $('.one_delete').removeClass('d-none');
+    $('.all_delete').addClass('d-none');
+
+    function confirmDelete() {
+        
+        $('.confirmation-dialog').addClass('show');
+        return new Promise(function(resolve, reject) {
+            $(confirm_yes).on('click', function() {
+                $('.confirmation-dialog').removeClass('show');
+                $('.overlay').removeClass('show');
+    
+                resolve(true); 
+            });
+    
+            $(confirm_no).on('click', function() {
+                $('.confirmation-dialog').removeClass('show');
+                $('.overlay').removeClass('show'); 
+    
+                resolve(false); 
+            });
+
+          
+        });
+    }
+
+
     e.preventDefault();
 
     var productId = $(this).data('id');
@@ -32,7 +68,8 @@ $(document).on('click', '.delete_button', function(e) {
         gallery: $('#gallery').val() || ''
     };
 
-    if (confirm('Are you sure you want to delete this product?')) {
+    confirmDelete().then(function(result) {
+    if (result) {
         $.ajax({
             url: 'delete_product.php',
             method: 'POST',
@@ -52,8 +89,6 @@ $(document).on('click', '.delete_button', function(e) {
                         
                         
                     });
-
-                    
                   console.log(responseData.count);
                   if(responseData.count === 1){
                     console.log('ok');
@@ -70,6 +105,7 @@ $(document).on('click', '.delete_button', function(e) {
         });
     }
 
+});
 
     function updateTableAndPagination(page, filters) {
         
@@ -100,11 +136,35 @@ $(document).on('click', '.delete_button', function(e) {
 
 $('#mytable').load(location.href + " #mytable", function() {
     
-    $('#mytable').on('click', '.delete_buttons', function(event) {
-        
+    $('#mytable').off('click', '.delete_buttons').on('click', '.delete_buttons', function(event) {
         event.preventDefault();
+        $('.confirmation-dialog').addClass('show');
+        $('.overlay').addClass('show');
+
+        $('.one_delete').addClass('d-none');
+        $('.all_delete').removeClass('d-none');
         
-        if (confirm('Delete all products!')) {
+    function confirmDeleteAll() {
+        return new Promise(function(resolve, reject) {
+            $(confirm_yes).on('click', function() {
+                $('.confirmation-dialog').removeClass('show');
+                $('.overlay').removeClass('show');
+                resolve(true);  
+            });
+
+            $(confirm_no).on('click', function() {
+                $('.confirmation-dialog').removeClass('show');
+                $('.overlay').removeClass('show');
+
+                resolve(false); 
+            });
+        });
+    }
+
+  
+
+    confirmDeleteAll().then(function(result) {
+        if (result) {
             $.ajax({
                 url: 'delete.php', 
                 type: 'POST',
@@ -121,14 +181,9 @@ $('#mytable').load(location.href + " #mytable", function() {
                     }).on('mouseleave', function() {
                         $(this).find('.hide').addClass('box_delete_buttons').removeClass('hide');
                     });
-                    
                 }
-
                     $('#tableID tbody').empty(); 
                     $('#paginationBox').empty();
-
-
-
                 },
                 
                 error: function(xhr, status, error) {
@@ -136,5 +191,6 @@ $('#mytable').load(location.href + " #mytable", function() {
                 }
             });
         }
-    });
+});
+});
 });

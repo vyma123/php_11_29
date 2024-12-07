@@ -44,8 +44,7 @@ LEFT JOIN product_property pp_categories ON products.id = pp_categories.product_
 LEFT JOIN property p_categories ON pp_categories.property_id = p_categories.id AND p_categories.type_ = 'category'
 LEFT JOIN product_property pp_gallery ON products.id = pp_gallery.product_id
 LEFT JOIN property g_images ON pp_gallery.property_id = g_images.id AND g_images.type_ = 'gallery'
-WHERE products.product_name LIKE :search_term
-";
+WHERE products.product_name LIKE :search_term ";
 
 if (!empty($category) && $category[0] != 0) {
     if (is_string($category)) {

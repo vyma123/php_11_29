@@ -1,5 +1,6 @@
 
 $(document).ready(function() {
+
     $('#syncButton').click(function(e) {
         e.preventDefault();
 
@@ -14,26 +15,16 @@ $(document).ready(function() {
             
             success: function(response) {
                 console.log(response);
-                $('#tableID').load(location.href + " #tableID"); 
-                $('#paginationBox').load(location.href + " #paginationBox"); 
-
-                $('.category_update').load(location.href + " .category_update", function() {
-                    $('#category').dropdown();
-                });
-
-                $('.tag_update').load(location.href + " .tag_update", function() {
-                    $('#tag').dropdown();
-                });
-                
+                $('#mytable').load(location.href + " #mytable"); 
             },
             error: function() {
-                alert('Có lỗi xảy ra khi đồng bộ sản phẩm.');
+                alert('err');
             },
             complete: function() {
                 $('.ui.loader').removeClass('active');
             }
         });
     });
-    
-
 });
+
+

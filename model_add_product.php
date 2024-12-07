@@ -1,26 +1,31 @@
 
-<div id="okMessageProduct2" class="ui success message">
+<div id="okMessageProduct2" class="ui success toast message toast_success update">
+<i class="check circle icon"></i>
     <div class="header">
     Product Update successfully.
     </div>
-  </div>
-<div class="ui modal product_box">
-
-
-<div id="noChanges" class="ui negative message d-none">
-  <div class="header">
-  No changes detected.
-  </div>
+    <i class="close icon" onclick="removeToast(this.parentElement, 'flexSPr')"></i>
   </div>
 
-
-<div id="okMessageProduct" class="ui success message d-none">
-    <div class="header">
-    Product Added successfully.
+  <div id="okMessageProduct" class="ui success toast message toast_success">
+  <i class="check circle icon"></i>
+      <div class="header">
+      Product Added successfully.
+      </div>
+    <i class="close icon" onclick="removeToast(this.parentElement, 'flexSPr')"></i>
     </div>
-  </div>
 
+    <div id="noChanges" class="ui negative toast message toast_error">
+    <i class="minus circle icon"></i>
+      <div class="header">
+      No changes detected.
+      </div>
+    <i class="close icon" onclick="removeToast(this.parentElement, 'flexWP')"></i>
+      </div>
+
+<div class="ui modal product_box">
   <!-- form -->
+  
   <form class="ui form form_add_products" class='editProduct' id="saveProduct" onsubmit="return validateForm()" enctype="multipart/form-data">
 
     <div class="field">
@@ -49,15 +54,17 @@
       <div  class="box_gallery">
         <div class="ui small image box_input box_featured">
         <input type="file" name="featured_image"  id="featured_image" accept="image/*">
-        </div>
+      </div>
+      <p class="required d-none" id="required_featured">Invalid image format. Please upload a valid image file.</p>
         <div class="close_image">
           <i class="times icon"></i>
         </div>
-       
+
         <div id="resultContainer">
           <img src="" alt="featured Image"  id="uploadedImage"/>
         </div>
       </div>
+
     </div>
     <div class="field featured_image_box">
       <label>Gallery<span class="required"></label>
@@ -65,6 +72,7 @@
         <div class="ui small image box_input box_gallery" >
           <input accept="image/*" type="file" name="gallery[]" id="gallery" accept="image/*" multiple>
         </div>
+      <p class="required d-none" id="required_gallery">Invalid image format. Please upload valid image files.</p>
         <div class="close_gallery">
           <i class="times icon"></i>
         </div>

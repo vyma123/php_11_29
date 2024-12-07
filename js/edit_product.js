@@ -60,13 +60,13 @@ let selectedTagNames = [];
                             $('.close_image').attr('style', 'display: flex !important');
                             $('.ui.small.image.box_input.box_featured').attr('style', 'display: none !important');
                         } else if(imageUrl && typeof imageUrl === 'string') {
-                            console.log('xs'+imageUrl);
-                            $('#uploadedImage').attr('src', './uploads/' + imageUrl);
+                            $('#uploadedImage').attr('src', 'uploads/' + imageUrl);
                             $('.close_image').attr('style', 'display: flex !important');
                             $('.ui.small.image.box_input.box_featured').attr('style', 'display: none !important');
 
                         }else{
                             console.log('xss'+imageUrl);
+                            
                             $('#uploadedImage').attr('src', '');
                             $('#uploadedImage').hide();
                             $('.close_image').attr('style', 'display: none !important');
@@ -79,8 +79,8 @@ let selectedTagNames = [];
                         console.log(res.gallery);
 
                         $.each(res.gallery, function(index, image) {
-                            var imagePath = './uploads/' + image.name_; 
-                            var imageName = imagePath.replace('./uploads/', '');
+                            var imagePath = 'uploads/' + image.name_; 
+                            var imageName = imagePath.replace('uploads/', '');
                             if (!imagePaths.includes(imagePath)) {
                                 imagePaths.push(imageName);
                             }
@@ -149,7 +149,7 @@ let selectedTagNames = [];
             
 
             const imageNames = imagePaths.map(function(imagePath) {
-                return imagePath.replace('./uploads/', ''); 
+                return imagePath.replace('uploads/', ''); 
             }); 
             
             oldGallery = imageNames;
@@ -162,10 +162,10 @@ let selectedTagNames = [];
                 const currentProductName = $('#product_name').val().trim();
                 const currentSku = $('#sku').val().trim(); 
                 const currentPrice = $('#price').val().trim(); 
-                const currentFeatured_image = $('#uploadedImage').attr('src').replace('./uploads/', '');
+                const currentFeatured_image = $('#uploadedImage').attr('src').replace('uploads/', '');
                 console.log(currentFeatured_image);
                 const currentGallery = $('#galleryPreviewContainer img').map(function() {
-                    return $(this).attr('src').replace('./uploads/', ''); 
+                    return $(this).attr('src').replace('uploads/', ''); 
                 }).get();
                 const currentCategory = $('#categories_select option:selected').map(function() {
                     return $(this).text(); 

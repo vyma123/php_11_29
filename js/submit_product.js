@@ -40,9 +40,10 @@ function validateForm(event) {
     const productName = document.getElementById("product_name").value;
     const sku = document.getElementById("sku").value;
     const priceInput = document.getElementById("price").value;
-    // const regex = /^[\p{L}0-9-_– ]+$/u;
     const regexsku = /^[\p{L}0-9-]+$/u;
     const regexprice = /^[0-9.]+$/;
+    $('#okMessageProduct').removeClass('flexSPr');   
+
 
     let hasError = false;
 
@@ -50,7 +51,7 @@ function validateForm(event) {
         $('#noChanges').removeClass('flexWP');     
         $('#required').removeClass('d-none'); 
         $('#checkstring').addClass('d-none');  
-    $('#okMessageProduct').removeClass('flexSPr');      
+        $('#okMessageProduct').removeClass('flexSPr');      
 
         hasError = true;
     } else {
@@ -60,14 +61,12 @@ function validateForm(event) {
 
 
 if (sku.trim() !== "" && !regexsku.test(sku.trim())) {
-    console.log('dfd');
     
     $('#noChanges').addClass('d-none');  
     $('#skuexist').addClass('d-none'); 
     $('#checksku').removeClass('d-none');  
     $('#noChanges').removeClass('flexWP');      
     $('#okMessageProduct').removeClass('flexSPr');    
-
 
     hasError = true;
 } else {
@@ -87,7 +86,6 @@ if (priceInput.trim() !== "" && !regexprice.test(priceInput)) {
     if (hasError) {
         return false;
     }
-
  
     return true;
 }
@@ -244,25 +242,40 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
 					$('#featured_image').val(''); 
 					$('#galleryPreviewContainer').empty();
 					$('#saveProduct')[0].reset();
+                    $('#required_featured').addClass('d-none');
+                    $('.close_image').attr('style', 'display: none !important');
+                    $('.close_gallery').attr('style', 'display: none !important');
+                    $('.ui.small.image.box_input.box_gallery').attr('style', 'display: inline-block !important');
+                    $('.ui.small.image.box_input.box_featured').attr('style', 'display: inline-block !important');
 
-					setTimeout(function() {
-						$('#okMessage_product').fadeOut(400, function() {
-							$(this).addClass('d-none');
-						});
-					}, 2000);
+                    $('#required_gallery').addClass('d-none');
+                    
+                    setTimeout(() => {
+                        $('#okMessageProduct').addClass('flexSPr');   
+                    }, 200);
                     
                     $('#mytable').load(location.href + " #mytable"); 
                     
+       
+
+
 				}else if(res.action == 'edit'){
 
                     $('#skuexist').addClass('d-none'); 
                     $('#okMessageProduct2').removeClass('d-none');  
                     $('#okMessageProduct2').addClass('flexSPr'); 
+                    $('#okMessageProduct').removeClass('flexSPr');  
+                    $('#noChanges').removeClass('flexWP');  
+                    $('#required_featured').addClass('d-none');
+                    $('#required_gallery').addClass('d-none');
 
-                    setTimeout(function() {
-                        $('#okMessageProduct2').addClass('d-none').removeClass('flexSPr');
-                    }, 2000);
-                  
+                    setTimeout(() => {
+                        $('#okMessageProduct2').addClass('flexSPr');   
+
+                        setTimeout(() => {
+                            $('#okMessageProduct2').removeClass('flexSPr'); 
+                        }, 2000); 
+                    }, 200);
                     
 		            $(".product_box").modal('hide');
                     $(".product_box").modal({
@@ -288,13 +301,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                 var category = res.category;
                 var tag = res.tag;
                 var gallery = res.gallery;
-                // var galleryN = res.gallery_images;
-                // console.log('fc'+ galleryN);
-                // console.log('f'+ gallery);
-
-
-                
-
 
        $('#tableID').find('.edit_button').each(function() {
 
@@ -318,12 +324,22 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
 
                 if(featuredImageN && featuredImageN !== ''){
                 
-                    button.closest('tr').find('.featured_image img').attr('src', './uploads/' + featuredImageN);
+                    button.closest('tr')
+                    .find('.featured_image img')
+                    .attr('src', 'uploads/' + featuredImageN)
+                    .attr('style', 'width: 170px !important; height: 70px !important;');
+
                 }else{
-                    button.closest('tr').find('.featured_image img').attr('src', './uploads/' + featuredImage);
-                }
+
+                    button.closest('tr')
+                    .find('.featured_image img')
+                    .attr('src', 'uploads/' + featuredImage)
+                    .attr('style', 'width: 170px !important; height: 70px !important;');
+                    }
             }else{
                 button.closest('tr').find('.featured_image img').attr('src', '');
+                button.closest('tr').find('.featured_image img').attr('style', 'width: auto !important');
+
             }
 
         if(gallery && gallery.name != ''){            
@@ -333,15 +349,15 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     
                     gallery.forEach(function(image) {
                         
-                        var img = galleryContainer.find('img[src="./uploads/' + image + '"]');
+                        var img = galleryContainer.find('img[src="uploads/' + image + '"]');
                         
                         if (img.length > 0) {
                             
-                            img.attr('src', './uploads/' + image);
+                            img.attr('src', 'uploads/' + image);
                             
                         } else {
                             
-                        galleryContainer.append('<img src="./uploads/' + image + '" alt="Gallery Image">');  
+                        galleryContainer.append('<img src="uploads/' + image + '" alt="Gallery Image">');  
 
                          var productIds = [];
 
@@ -385,7 +401,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                         }
                     }
                 });
-            
         }
             else{
                 var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
@@ -409,7 +424,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
             return cat.name_; 
         }).join(', ');  
 
-        
         button.closest('tr').find('.tag').text(tagNames);
         } else {
             button.closest('tr').find('.tag').text('');
