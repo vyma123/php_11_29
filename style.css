@@ -252,6 +252,7 @@ table thead .date{
 
 #tableID{
     text-align: center;
+    border-top: none;
 }
 
 
@@ -261,6 +262,7 @@ table thead .date{
     height: 510px;
     overflow-y: auto;  
     margin-bottom: 10px; 
+    border-bottom: 1px solid #00000032;
 }
 .box_table2{
 
@@ -772,7 +774,7 @@ border: 1px solid rgb(209, 213, 219);
 
 
 .overlay {
-    display: none; /* Ẩn lớp phủ ban đầu */
+    display: none; 
     position: fixed;
     top: 0;
     left: 0;
@@ -780,15 +782,20 @@ border: 1px solid rgb(209, 213, 219);
     height: 100%;
     --tw-bg-opacity: .3;
     background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-    z-index: 999; /* Đảm bảo lớp phủ hiển thị trên cùng */
+    z-index: 999;
     justify-content: center;
     align-items: center;
 }
 
 .overlay.show {
-    display: flex; /* Hiển thị lớp phủ khi được kích hoạt */
+    display: flex; 
 }
 
 .confirmation-dialog {
-    z-index: 1000; /* Hộp thoại xác nhận nằm trên lớp phủ */
+    z-index: 1000; 
+}
+
+.mytable{
+    border-top: 1px solid #00000032;
+    box-shadow: 0 0 0 #00000020;
 }

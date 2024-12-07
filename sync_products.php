@@ -170,7 +170,6 @@ foreach ($titles as $key => $title) {
 
             } else {
                 $sku = generateSKU($pdo);
-echo 'sddddddddddddddddddddd';
 
                 $insertStmt = $pdo->prepare('INSERT INTO products (crawl_p_id, product_name, sku, price, featured_image, date) VALUES (:crawl_p_id, :product_name, :sku, :price, :featured_image, now())');
                 echo $productId;

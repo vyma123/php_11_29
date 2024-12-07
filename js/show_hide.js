@@ -137,9 +137,6 @@ $('#gallery').on('change', function () {
 });
 
 
-
-
-
 $('.close_gallery').on('click', function() {
     $('#galleryPreviewContainer img').attr('src', '').hide(); 
     $('#gallery').val(''); 
