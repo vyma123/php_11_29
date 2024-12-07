@@ -49,7 +49,7 @@ foreach ($results as $row) {
     } else if(!empty($imageSrc)) {
         $content .= '<img src="uploads/' . $imageSrc . '">';
     }else{
-        $content .='<img class="empty_image" src="">';
+        $content .='';
     }
     $content .= '</td>';
     
@@ -60,7 +60,7 @@ foreach ($results as $row) {
         }
         $content .= '</div></td>';
     }else{
-       $content .= '<td><img src=""></td>';
+       $content .= '<td></td>';
     }
    
     $categorySelected = "SELECT p.name_ FROM product_property pp

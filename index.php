@@ -146,7 +146,7 @@ include './includes/select_products.php';
                     if (  trim($imageSrc) !== '') {
                             echo '<img class="f_image" src="uploads/' . htmlspecialchars($imageSrc) . '">';
                     } else {
-                        echo '<img class="empty_image" src="">'; 
+                        echo ''; 
                     }
                     ?>
                 </td>
@@ -161,7 +161,7 @@ include './includes/select_products.php';
                }
                echo "</div></td>";
            } else {
-               echo '<td><img src=""></td>'; 
+               echo '<td></td>'; 
            }
            
              echo "<td class='category'>" . htmlspecialchars($row['categories'] ?? '') . "</td>";

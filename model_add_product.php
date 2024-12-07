@@ -73,6 +73,8 @@
           <input accept="image/*" type="file" name="gallery[]" id="gallery" accept="image/*" multiple>
         </div>
       <p class="required d-none" id="required_gallery">Invalid image format. Please upload valid image files.</p>
+      <p class="required d-none" id="limit_gallery">You can only select up to 15 images.</p>
+
         <div class="close_gallery">
           <i class="times icon"></i>
         </div>
@@ -111,6 +113,7 @@
       <button id="addProductButton" class="ui positive button d-none" type="submit" >Add Product</button>
    
      <button id="editProductButton" class="ui positive button d-none" type="submit">Edit Product</button>
+     
 
     </div>
   </form> 

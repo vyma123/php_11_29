@@ -247,7 +247,7 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     $('.close_gallery').attr('style', 'display: none !important');
                     $('.ui.small.image.box_input.box_gallery').attr('style', 'display: inline-block !important');
                     $('.ui.small.image.box_input.box_featured').attr('style', 'display: inline-block !important');
-
+                    $('#limit_gallery').addClass('d-none');
                     $('#required_gallery').addClass('d-none');
                     
                     setTimeout(() => {
@@ -268,6 +268,7 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     $('#noChanges').removeClass('flexWP');  
                     $('#required_featured').addClass('d-none');
                     $('#required_gallery').addClass('d-none');
+                    $('#limit_gallery').addClass('d-none');
 
                     setTimeout(() => {
                         $('#okMessageProduct2').addClass('flexSPr');   
@@ -323,6 +324,7 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
             if((featuredImage && featuredImage !== '') || (featuredImageN && featuredImageN !== '')){
 
                 if(featuredImageN && featuredImageN !== ''){
+                console.log('k'+featuredImageN);
                 
                     button.closest('tr')
                     .find('.featured_image img')
@@ -330,15 +332,20 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     .attr('style', 'width: 170px !important; height: 70px !important;');
 
                 }else{
+                    console.log('b');
 
-                    button.closest('tr')
-                    .find('.featured_image img')
+                    let newImage = $('<img>')
                     .attr('src', 'uploads/' + featuredImage)
                     .attr('style', 'width: 170px !important; height: 70px !important;');
+                
+                     button.closest('tr')
+                    .find('.featured_image')
+                    .html(newImage); 
                     }
             }else{
-                button.closest('tr').find('.featured_image img').attr('src', '');
-                button.closest('tr').find('.featured_image img').attr('style', 'width: auto !important');
+                console.log('c');
+                button.closest('tr').find('.featured_image').empty();
+
 
             }
 
@@ -405,7 +412,7 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
             else{
                 var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
                 galleryContainer.empty();  
-                galleryContainer.append('<img class="empty_image" src="">');  
+                galleryContainer.append('');  
             }
 
         if (category && category.length > 0) {

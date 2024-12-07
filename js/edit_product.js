@@ -15,6 +15,10 @@ let selectedTagNames = [];
         $(document).on('click', '.edit_button', function(e) {
             e.preventDefault();   
 
+            $('.ui.modal.product_box').modal({
+                autofocus: false 
+              }).modal('show');
+
             $('#featured_image').val(''); 
             $('#gallery').val('');
         
@@ -38,7 +42,6 @@ let selectedTagNames = [];
                     if(res.status == 422){
                         alert(res.message);
         
-                        
                     } else if(res.status == 200){				
         
                         const decodedProductName = $('<div>').html(res.data.product_name).text(); 
@@ -53,7 +56,6 @@ let selectedTagNames = [];
                         $('#galleryPreviewContainer').show();
                         
                         imageUrl = res.data.featured_image;
-
                         
                         if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
                             $('#uploadedImage').attr('src', imageUrl);

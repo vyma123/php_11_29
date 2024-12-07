@@ -10,6 +10,7 @@ $(function(){
         $('#noChanges').removeClass('flexWP');  
         $('#required_featured').addClass('d-none');
         $('#required_gallery').addClass('d-none');
+        $('#limit_gallery').addClass('d-none');
 
 	});
 	$(".product_box").modal({
@@ -26,6 +27,7 @@ $(document).ready(function() {
              $('#noChanges').removeClass('flexWP');  
              $('#required_featured').addClass('d-none');
              $('#required_gallery').addClass('d-none');
+             $('#limit_gallery').addClass('d-none');
 
         }
     });
@@ -92,6 +94,13 @@ $('#gallery').on('change', function () {
         return;
     }
 
+    if (files.length > 15) {
+        $('#limit_gallery').removeClass('d-none');
+        fileInput.value = ""; 
+        $('#galleryPreviewContainer').empty(); 
+        return;
+    }
+
     const acceptedFormats = [
         "image/png",
         "image/jpg",
@@ -113,7 +122,9 @@ $('#gallery').on('change', function () {
         if (acceptedFormats.includes(file.type)) {
        $('#galleryPreviewContainer').attr('style', 'display: block !important');
        $('#required_gallery').addClass('d-none');
+       $('#limit_gallery').addClass('d-none');
 
+       console.log('sfsdf');
             const reader = new FileReader();
             reader.onload = function (e) {
                 const img = $('<img>', { src: e.target.result, alt: 'Gallery Image' }).css({
@@ -128,6 +139,7 @@ $('#gallery').on('change', function () {
             };
             reader.readAsDataURL(file); 
         } else {
+            
             $('#required_gallery').removeClass('d-none');
             fileInput.value = ""; 
             galleryPreviewContainer.empty(); 
