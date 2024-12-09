@@ -40,7 +40,7 @@ include './includes/select_products.php';
             <div class="product_header_bottom">
                 <select class="ui dropdown" id="sort_by">
                     <option value="date">Date</option>
-                    <option value="product_name">Product name</option>
+                    <option value="product_name">Name</option>
                     <option value="price">Price</option>
                 </select>
                 <select class="ui dropdown" id="order">

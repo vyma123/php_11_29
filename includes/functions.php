@@ -45,7 +45,7 @@ function insert_property(object $pdo, string $type_, string $name_) {
 function getRecordCount($pdo, $searchTermLike, $category = null, $tag = null, $date_from = null, 
                         $date_to = null, $price_from = null, $price_to = null) {
     $query = "SELECT COUNT(DISTINCT products.id) FROM products";
-    $conditions = ["products.product_name LIKE :search_term"];
+    $conditions = ["(products.product_name LIKE :search_term OR products.sku LIKE :search_term) "];
     $params = [':search_term' => $searchTermLike];
     
     if ($category) {
@@ -89,10 +89,13 @@ function getRecordCount($pdo, $searchTermLike, $category = null, $tag = null, $d
         $conditions[] = "products.price BETWEEN :price_from AND :price_to ";
         $params[':price_from'] = $price_from;
         $params[':price_to'] = $price_to;
-    } elseif ($price_from !== null) {
+    } elseif ($price_from != null) {
+
         $conditions[] = "products.price >= :price_from ";
         $params[':price_from'] = $price_from;
-    } elseif ($price_to !== null) {
+
+    } elseif ($price_to != null) {
+        
         if ($price_to == 0) {
             $conditions[] = "products.price = 0 ";
         } else {

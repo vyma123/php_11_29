@@ -96,8 +96,6 @@ function applyFilters(event) {
             console.log(data.totalProducts);
 
             if(data.totalProducts === 0 ){
-                console.log('dghss');
-                
                 $('#tableID').on('mouseenter', function() {
                     $(this).find('.box_delete_buttons').addClass('hide').removeClass('box_delete_buttons');
 

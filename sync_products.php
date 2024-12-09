@@ -25,7 +25,6 @@ if ($crawler->filter('title')->count() > 0) {
 } 
 
 $productId = isset($matches[1]) ? $matches[1] : null;
-echo 'Product ID: ' . $productId;
 
 $httpClient = new \Goutte\Client();
 
@@ -108,13 +107,11 @@ foreach ($titles as $key => $title) {
         
         if ($downloadedImagePath) {
             $imageNameOnly = basename($downloadedImagePath);  
-            echo "Image saved to: " . $downloadedImagePath . PHP_EOL;
         } else {
             echo "Failed to save image." . PHP_EOL;
         }
     }
 
-    echo "Product Title: " . $title . PHP_EOL;
 
     foreach ($colorArray as $color) {
 
@@ -122,8 +119,6 @@ foreach ($titles as $key => $title) {
 
         foreach ($sizeArray as $size) {
             $name = $title . ' ' . $translatedColor . ' ' . $size;
-            echo 'Name: ' . htmlspecialchars($name) . PHP_EOL;
-            echo 'Image Src: ' . $featuredImageSrc . PHP_EOL;
 
             $productId++;
 
@@ -162,7 +157,6 @@ foreach ($titles as $key => $title) {
                     if ($downloadedGalleryPath) {
                         $galleryImageNameOnly = basename($downloadedGalleryPath);
                         addGalleryProperty($product_id, $galleryImageNameOnly, $pdo);
-                        echo "Gallery image saved to: " . $galleryImageNameOnly . PHP_EOL;
                     } else {
                         echo "Failed to save gallery image." . PHP_EOL;
                     }

@@ -18,7 +18,6 @@ $stmt->bindParam(':per_page', $per_page_record, PDO::PARAM_INT);
 $stmt->execute();
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
 $allowed_sort_columns = ['id', 'product_name', 'price'];
 $sort_by = isset($_GET['sort_by']) && in_array($_GET['sort_by'], $allowed_sort_columns) ? $_GET['sort_by'] : 'id';
 $allowed_order_directions = ['ASC', 'DESC'];
@@ -44,7 +43,7 @@ LEFT JOIN product_property pp_categories ON products.id = pp_categories.product_
 LEFT JOIN property p_categories ON pp_categories.property_id = p_categories.id AND p_categories.type_ = 'category'
 LEFT JOIN product_property pp_gallery ON products.id = pp_gallery.product_id
 LEFT JOIN property g_images ON pp_gallery.property_id = g_images.id AND g_images.type_ = 'gallery'
-WHERE products.product_name LIKE :search_term ";
+WHERE  (products.product_name LIKE :search_term OR products.sku LIKE :search_term) ";
 
 if (!empty($category) && $category[0] != 0) {
     if (is_string($category)) {
@@ -130,12 +129,11 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (!empty($category) || !empty($tag) || (!empty($date_from) || !empty($date_to)) || (!empty($price_from) || !empty($price_to))) {
     $total_records = getRecordCount($pdo, $searchTermLike, $category, $tag, $date_from, $date_to, $price_from, $price_to);
 } else {
-    $count_query = "SELECT COUNT(*) FROM products WHERE product_name LIKE :search_term";
+    $count_query = "SELECT COUNT(*) FROM products WHERE product_name LIKE :search_term OR sku LIKE :search_term";
     $count_stmt = $pdo->prepare($count_query);
     $count_stmt->bindParam(':search_term', $searchTermLike, PDO::PARAM_STR);
     $count_stmt->execute();
     $total_records = $count_stmt->fetchColumn();
 }
-
 ?>
 

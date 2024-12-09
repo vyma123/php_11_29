@@ -216,7 +216,6 @@ height: auto !important;
     .img_box{
         text-align: center;
         overflow: hidden;
-        cursor: pointer;
         border-radius: 10px;
     }
 
