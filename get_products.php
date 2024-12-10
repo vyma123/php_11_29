@@ -32,8 +32,13 @@ foreach ($results as $row) {
     $galleryImages = $row['gallery_images'] ?? ''; 
     $galleryImagesArray =  explode(', ', $galleryImages);
     $imageSrc = $row['featured_image'];
-    $date = DateTime::createFromFormat('Y-m-d', $row['date']);
-    $date = $date->format('d/m/Y');
+    
+    $date = DateTime::createFromFormat('Y-m-d H:i:s', $row['date']);
+    if ($date !== false) {
+        $date = $date->format('d/m/Y');
+    } else {
+        $date = 'error date'; 
+    }
 
     $content .= '<tbody id="productTableBody">';
     $content .= '<tr  data-id="' . $row['id'] . '">';

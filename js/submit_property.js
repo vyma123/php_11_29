@@ -79,7 +79,6 @@ function validateFormProperty(event) {
        $('#errMessage').removeClass('flexWP');     
         $('#checkstringP').removeClass('d-none');             
  
-         console.log("Don't allow special characters cate");
          hasError = true;
     }else{
         $('#checkstringP').addClass('d-none');             
@@ -89,14 +88,12 @@ function validateFormProperty(event) {
        $('#okMessage').removeClass('flexSP');     
         $('#errMessage').removeClass('flexWP');     
         $('#checkstring2').removeClass('d-none');             
-         console.log("Don't allow special characters tag");
          hasError = true;
     }else{
         $('#checkstring2').addClass('d-none');  
     }
 
     if (!hasError) {
-        console.log('111');
     setTimeout(() => {
         $('#okMessage').addClass('flexSP');   
         $('#checkstringcomma').addClass('d-none');

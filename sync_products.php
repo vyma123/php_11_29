@@ -106,7 +106,7 @@ foreach ($titles as $key => $title) {
         $downloadedImagePath = downloadImage($featuredImageSrc, $imageName);
         
         if ($downloadedImagePath) {
-            $imageNameOnly = basename($downloadedImagePath);  
+            $imageNameOnly = basename($downloadedImagePath); 
         } else {
             echo "Failed to save image." . PHP_EOL;
         }
@@ -166,7 +166,6 @@ foreach ($titles as $key => $title) {
                 $sku = generateSKU($pdo);
 
                 $insertStmt = $pdo->prepare('INSERT INTO products (crawl_p_id, product_name, sku, price, featured_image, date) VALUES (:crawl_p_id, :product_name, :sku, :price, :featured_image, now())');
-                echo $productId;
                 $insertStmt->execute([
                     'crawl_p_id' => $productId,
                     'product_name' => htmlspecialchars($name),
@@ -184,7 +183,6 @@ foreach ($titles as $key => $title) {
                     if ($downloadedGalleryPath) {
                         $galleryImageNameOnly = basename($downloadedGalleryPath);
                         addGalleryProperty($product_id, $galleryImageNameOnly, $pdo);
-                        echo "Gallery image saved to: " . $galleryImageNameOnly . PHP_EOL;
                     } else {
                         echo "Failed to save gallery image." . PHP_EOL;
                     }

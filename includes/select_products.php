@@ -18,8 +18,8 @@ $stmt->bindParam(':per_page', $per_page_record, PDO::PARAM_INT);
 $stmt->execute();
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$allowed_sort_columns = ['id', 'product_name', 'price'];
-$sort_by = isset($_GET['sort_by']) && in_array($_GET['sort_by'], $allowed_sort_columns) ? $_GET['sort_by'] : 'id';
+$allowed_sort_columns = ['date', 'product_name', 'price'];
+$sort_by = isset($_GET['sort_by']) && in_array($_GET['sort_by'], $allowed_sort_columns) ? $_GET['sort_by'] : 'date';
 $allowed_order_directions = ['ASC', 'DESC'];
 $order = isset($_GET['order']) && in_array($_GET['order'], $allowed_order_directions) ? $_GET['order'] : 'ASC';
 
@@ -76,11 +76,11 @@ if (!empty($date_to)) {
     $query .= " AND products.date <= :date_to"; 
 }
 
-if (!empty($price_from)) {
+if (isset($price_from) && $price_from !== '') {
     $query .= " AND products.price >= :price_from"; 
 }
 
-if (!empty($price_to)) {
+if (isset($price_to) && $price_to !== '') {
     $query .= " AND products.price <= :price_to";
 }
 
@@ -113,11 +113,11 @@ if (!empty($date_to)) {
     $stmt->bindParam(':date_to', $date_to);
 }
 
-if (!empty($price_from)) {
+if (isset($price_from) && $price_from !== '') {
     $stmt->bindParam(':price_from', $price_from);
 }
 
-if (!empty($price_to)) {
+if (isset($price_to) && $price_to !== '') {
     $stmt->bindParam(':price_to', $price_to);
 }
 
@@ -126,7 +126,7 @@ $stmt->bindParam(':per_page', $per_page_record, PDO::PARAM_INT);
 $stmt->execute();
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if (!empty($category) || !empty($tag) || (!empty($date_from) || !empty($date_to)) || (!empty($price_from) || !empty($price_to))) {
+if (!empty($category) || !empty($tag) || (!empty($date_from) || !empty($date_to)) || ((isset($price_from) && $price_from !== '') || (isset($price_to) && $price_to !== ''))) {
     $total_records = getRecordCount($pdo, $searchTermLike, $category, $tag, $date_from, $date_to, $price_from, $price_to);
 } else {
     $count_query = "SELECT COUNT(*) FROM products WHERE product_name LIKE :search_term OR sku LIKE :search_term";

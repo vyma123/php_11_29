@@ -11,7 +11,6 @@ $(function(){
         $('#required_featured').addClass('d-none');
         $('#required_gallery').addClass('d-none');
         $('#limit_gallery').addClass('d-none');
-
 	});
 	$(".product_box").modal({
 		closable: true
@@ -50,7 +49,6 @@ $('#featured_image').on('change', function() {
     ];
 
     if (!file) {
-        console.log("File selection was canceled.");
         return; 
     }
 
@@ -89,7 +87,6 @@ $('#gallery').on('change', function () {
     const files = fileInput.files;
 
     if (!files.length) {
-        console.log("No files selected.");
         $('#galleryPreviewContainer').empty();  
         return;
     }
@@ -124,7 +121,6 @@ $('#gallery').on('change', function () {
        $('#required_gallery').addClass('d-none');
        $('#limit_gallery').addClass('d-none');
 
-       console.log('sfsdf');
             const reader = new FileReader();
             reader.onload = function (e) {
                 const img = $('<img>', { src: e.target.result, alt: 'Gallery Image' }).css({

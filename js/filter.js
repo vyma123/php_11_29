@@ -17,7 +17,7 @@ if (priceInput1.trim() !== "" && !regexprice.test(priceInput1)) {
     $('#price_from').removeClass('err_border');  
 }
 
-if (priceInput2.trim() !== "" && !regexprice.test(priceInput2) || priceInput2.trim() !== "" && priceInput2.trim() <= 0) {
+if (priceInput2.trim() !== "" && !regexprice.test(priceInput2) || priceInput2.trim() !== "" && priceInput2.trim() < 0) {
     $('#price_to').addClass('err_border');  
 
     hasError = true;
@@ -34,7 +34,6 @@ if (priceInput2.trim() !== "" && !regexprice.test(priceInput2) || priceInput2.tr
 
 
 function handleFilterClick(event) {
-    console.log('cfv');
     
     if (validatePrice(event)) {
         applyFilters(event); 

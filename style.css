@@ -395,7 +395,6 @@ transform: scale(1.05);
 
 .tag{
     white-space: nowrap;
-    overflow-x: auto;
     max-width: 200px;
 }
 

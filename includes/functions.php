@@ -95,12 +95,8 @@ function getRecordCount($pdo, $searchTermLike, $category = null, $tag = null, $d
         $params[':price_from'] = $price_from;
 
     } elseif ($price_to != null) {
-        
-        if ($price_to == 0) {
-            $conditions[] = "products.price = 0 ";
-        } else {
             $conditions[] = "products.price <= :price_to ";
-        }
+        
         $params[':price_to'] = $price_to;
     }
 
@@ -146,8 +142,6 @@ function generateSKU($pdo) {
 
     return $sku;
 }
-
-
 
 
 function update_product(object $pdo, int $product_id, string $product_name, string $sku, string $price, string $featured_image){

@@ -131,8 +131,12 @@ include './includes/select_products.php';
                     $product_id = $row['id']; 
                     $imageSrc = $row['featured_image'];
 
-                    $date = DateTime::createFromFormat('Y-m-d', $row['date']);
-                    $date = $date->format('d/m/Y');
+                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $row['date']);
+                    if ($date !== false) {
+                        $date = $date->format('d/m/Y');
+                    } else {
+                        $date = 'error date'; 
+                    }
 
                     ?>
             <tr>
@@ -229,7 +233,6 @@ include './includes/select_products.php';
 
 
 <div class="overlay">
-    <!-- Hộp thoại xác nhận xóa -->
     <div class="confirmation-dialog">
         <div class="top_delete">
             <div class="box_text_delete">

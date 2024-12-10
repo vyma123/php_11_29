@@ -44,22 +44,31 @@ if (isset($_POST['action_type'])) {
        
             
             $featured_image = $_FILES['featured_image'];
+            $new_file_name = '';
+            
+        if (isset($featured_image) && $featured_image['size'] > 0) {
+            
+            $file_extension = pathinfo($featured_image['name'], PATHINFO_EXTENSION);
+    
+            $new_file_name = str_replace('.', '', uniqid('file_', true)) . '.' . $file_extension;
 
+        }
+            $upload_path = 'uploads/' . $new_file_name;
            
-            $file_name = $featured_image['name'];
             $file_tmp_name = $featured_image['tmp_name'];
             
             $upload_dir = 'uploads/';
             if (!file_exists($upload_dir)) {
                 mkdir($upload_dir, 0777, true); 
             }
+    
 
-            if (move_uploaded_file($file_tmp_name, $upload_dir . $file_name)) {
+            if (move_uploaded_file($file_tmp_name, $upload_dir . $new_file_name)) {
                 if(empty($sku)){
                     $sku = generateSKU($pdo);
-                    update_product($pdo, $product_id ,$product_name, $sku, $price, $file_name);
+                    update_product($pdo, $product_id ,$product_name, $sku, $price, $new_file_name);
                 }else{
-                    update_product($pdo, $product_id ,$product_name, $sku, $price, $file_name);
+                    update_product($pdo, $product_id ,$product_name, $sku, $price, $new_file_name);
                 }
             } else if(isset($_POST['imageHidden']) && $_POST['imageHidden'] === 'true'){
                 if(empty($sku)){
@@ -81,9 +90,15 @@ if (isset($_POST['action_type'])) {
         
         if (isset($_FILES['gallery'])) {
             $gallery_images = $_FILES['gallery'];
+            $new_file_names = []; 
             $gallery_filenames = [];
         
             $upload_dir = 'uploads/';
+
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true); 
+            }
+
             if (isset($_FILES['gallery']) && $_FILES['gallery']['error'][0] == 0) {
 
             deleteProductGalleryProperties($product_id, $pdo);
@@ -91,11 +106,19 @@ if (isset($_POST['action_type'])) {
             foreach ($gallery_images['name'] as $key => $name) {
                 $tmp_name = $gallery_images['tmp_name'][$key];
                 $file_name = basename($name);
-                $target_path = $upload_dir . $file_name;
+
+                if(!empty($file_name) && is_string($file_name)){
+                    $file_extension = pathinfo($file_name, PATHINFO_EXTENSION); 
+                    $new_gallery_file_name = str_replace('.', '', uniqid('gallery_', true)) . '.' . $file_extension;
+                    $new_file_names[] = $new_gallery_file_name; // Thêm tên file mới vào mảng
+
+                }
+                
+                $target_path = $upload_dir . $new_gallery_file_name;
 
                 if (move_uploaded_file($tmp_name, $target_path)) {
 
-                    addGalleryProperty($product_id, $file_name, $pdo);
+                    addGalleryProperty($product_id, $new_gallery_file_name, $pdo);
 
                 }
             }
@@ -152,6 +175,11 @@ if (isset($_POST['action_type'])) {
         $product_names = htmlspecialchars_decode($product_name ?? '', ENT_QUOTES);
         
         $featured_imageN = null;
+        $name_F = '';
+
+        
+        $name_F = $new_file_name;
+        
 
         if (isset($featured_image) && $featured_image['error'] === UPLOAD_ERR_NO_FILE) {
             $query = "SELECT featured_image FROM products WHERE id = :product_id";
@@ -172,11 +200,7 @@ if (isset($_POST['action_type'])) {
         $gallery_images = [];
 
         if (isset($_FILES['gallery']) && $_FILES['gallery']['error'][0] !== UPLOAD_ERR_NO_FILE) {
-            foreach ($_FILES['gallery']['name'] as $index => $image_name) {
-                if ($_FILES['gallery']['error'][$index] === UPLOAD_ERR_OK) {
-                    $gallery_images[] = $image_name;  
-                }
-            }
+            
         } else {
             $namegallery = getNamePropertybyID($product_id, $pdo, 'gallery');
             
@@ -189,19 +213,17 @@ if (isset($_POST['action_type'])) {
             }
         }
 
-
-
          $res = ['status' => 200, 'action' => 'edit', 
                   'message' => 'Product updated successfully',
                   'product_id' => $product_id,
                   'product_name' => $product_names,
                   'sku' => $sku,
                   'price' => $price,
-                  'featured_image' => $featured_image, 
+                  'featured_image' => $name_F, 
                   'featured_imageN' => $featured_imageN, 
                   'gallery_images' => $gallery_images, 
-                  'gallery' => $gallery_images, 
-                  'category' => $categoriesse, 
+                'gallery' => $new_file_names, 
+                'category' => $categoriesse, 
                   'tag' => $tagsse, 
 
                 ];
@@ -247,35 +269,46 @@ if (isset($_POST['action_type'])) {
             return;
         }
 
-            $file_name = $featured_image['name'];
-            move_uploaded_file($featured_image['tmp_name'], 'uploads/' . $file_name);
-           
-                if(empty($sku)){
-                    $sku = generateSKU($pdo);
-                    $product_id = insert_product($pdo, $product_name, $sku, $price, $file_name);
+        $featured_image = $_FILES['featured_image']; 
+        $new_file_name = '';
+
+        if (isset($featured_image) && $featured_image['size'] > 0) {
+
+        $file_extension = pathinfo($featured_image['name'], PATHINFO_EXTENSION);
+
+        $new_file_name = str_replace('.', '', uniqid('file_', true)) . '.' . $file_extension;
+
+
+        }
+
+        $upload_path = 'uploads/' . $new_file_name;
+
+        move_uploaded_file($featured_image['tmp_name'], $upload_path);
+
+               if(empty($sku)){
+                   $sku = generateSKU($pdo);
+                   $product_id = insert_product($pdo, $product_name, $sku, $price, $new_file_name);
                 }else{
-                    $product_id = insert_product($pdo, $product_name, $sku, $price, $file_name);
+                    $product_id = insert_product($pdo, $product_name, $sku, $price, $new_file_name);
+                }
+                
+                if (!$product_id) {
+                    echo json_encode(['status' => 500, 'message' => 'Failed to insert product.']);
+                    return;
+                }
+                
+                if (!empty($selected_categories) && is_array($selected_categories[0])) {
+                    $selected_categories = $selected_categories[0];
+                }
+                
+                addProductProperties($product_id, $selected_categories, $pdo, 'category');
+                
+                $responses[] = ['status' => 200, 'message' => 'Categories added successfully.'];
+                
+                if (!empty($selected_tags) && is_array($selected_tags[0])) {
+                    $selected_tags = $selected_tags[0];
                 }
             
-
-            if (!$product_id) {
-                echo json_encode(['status' => 500, 'message' => 'Failed to insert product.']);
-                return;
-            }
-        
-
-        if (!empty($selected_categories) && is_array($selected_categories[0])) {
-            $selected_categories = $selected_categories[0];
-        }
-
-        addProductProperties($product_id, $selected_categories, $pdo, 'category');
-
-        
-        $responses[] = ['status' => 200, 'message' => 'Categories added successfully.'];
-
-        if (!empty($selected_tags) && is_array($selected_tags[0])) {
-            $selected_tags = $selected_tags[0];
-        }
 
         addProductProperties($product_id, $selected_tags, $pdo, 'tag');
 
@@ -287,19 +320,23 @@ if (isset($_POST['action_type'])) {
             foreach ($gallery_images['error'] as $key => $error) {
                 if ($error === UPLOAD_ERR_OK) {
                     $gallery_file_name = $gallery_images['name'][$key];
+
+                    $file_extension = pathinfo($gallery_file_name, PATHINFO_EXTENSION);
+                    $new_gallery_file_name = str_replace('.', '', uniqid('gallery_', true)) . '.' . $file_extension;
                     
-                    if (!in_array($gallery_file_name, $unique_images)) {
-                        move_uploaded_file($gallery_images['tmp_name'][$key], 'uploads/' . $gallery_file_name);
+                    if (!in_array($new_gallery_file_name, $unique_images)) {
+
+                        move_uploaded_file($gallery_images['tmp_name'][$key], 'uploads/' . $new_gallery_file_name);
         
-                        $property_id = insert_property($pdo, 'gallery', $gallery_file_name);
+                        $property_id = insert_property($pdo, 'gallery', $new_gallery_file_name);
                         add_product_property($pdo, $product_id, $property_id);
         
                         $responses[] = [
                             'status' => 200,
-                            'message' => 'Gallery image ' . $gallery_file_name . ' uploaded successfully.'
+                            'message' => 'Gallery image ' . $new_gallery_file_name . ' uploaded successfully.'
                         ];
         
-                        $unique_images[] = $gallery_file_name;
+                        $unique_images[] = $new_gallery_file_name;
                     }
                 }
             }

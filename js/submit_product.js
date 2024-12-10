@@ -194,15 +194,12 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
     if(uploadedImage){
         let isHidden = uploadedImage.style.display === 'none';
         formData.append('imageHidden', isHidden ? 'true' : 'false');
-        console.log('d'+isHidden);
-        
     }
     
      const galleryImage = document.querySelector('#galleryPreviewContainer img');
      if (galleryImage) {
          let isHidden2 = galleryImage.style.display === 'none';
          formData.append('imageHidden2', isHidden2 ? 'true' : 'false');
-        console.log(isHidden2);
 
      }
 
@@ -224,7 +221,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
 				res.errors.forEach(function(error) {
 
                 if(error.field == 'exist'){
-                    console.log('menos2');
                     $('#skuexist').removeClass('d-none'); 
                 }
             })
@@ -256,7 +252,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     
                     $('#mytable').load(location.href + " #mytable"); 
                     
-       
 
 
 				}else if(res.action == 'edit'){
@@ -298,10 +293,13 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                 var updatedSku = res.sku; 
                 var updatedPrice = res.price; 
                 var featuredImageN = res.featured_imageN;                
-                var featuredImage = res.featured_image.name;
+                var featuredImage = res.featured_image;
                 var category = res.category;
                 var tag = res.tag;
                 var gallery = res.gallery;
+                var gallery_images = res.gallery_images;
+
+                
 
        $('#tableID').find('.edit_button').each(function() {
 
@@ -332,7 +330,7 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     .attr('style', 'width: 170px !important; height: 70px !important;');
 
                 }else{
-                    console.log('b');
+                    console.log('f'+featuredImage);
 
                     let newImage = $('<img>')
                     .attr('src', 'uploads/' + featuredImage)
@@ -343,77 +341,278 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     .html(newImage); 
                     }
             }else{
-                console.log('c');
                 button.closest('tr').find('.featured_image').empty();
 
-
             }
 
-        if(gallery && gallery.name != ''){            
+         
+
+            if( (gallery_images && gallery_images !== '') || (gallery && gallery.name !== '') ){
+
+            if(Array.isArray(gallery_images) && gallery_images.length > 0){            
+                console.log('aaaa'+ typeof gallery_images);
                 
-                    var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
-                    galleryContainer.empty();  
-                    
-                    gallery.forEach(function(image) {
-                        
-                        var img = galleryContainer.find('img[src="uploads/' + image + '"]');
-                        
-                        if (img.length > 0) {
-                            
-                            img.attr('src', 'uploads/' + image);
-                            
-                        } else {
-                            
-                        galleryContainer.append('<img src="uploads/' + image + '" alt="Gallery Image">');  
-
-                         var productIds = [];
-
-                        $('#tableID tr').each(function() {
-                            var id = $(this).find('.edit_button').data('id');
-                            if (id) { productIds.push(id); }
-                        });
-
-                        var filters = {
-                            category: $('#category').val() || '',
-                            tag: $('#tag').val() || '',
-                            search: $('#search').val() || '',
-                            sort_by: $('#sort_by').val() || '',
-                            order: $('#order').val() || '',
-                            date_from: $('#date_from').val() || '',
-                            date_to: $('#date_to').val() || '',
-                            price_from: $('#price_from').val() || '',
-                            price_to: $('#price_to').val() || '',
-                            gallery: $('#gallery').val() || ''
-                        };
-                        
-                        updateTableAndPagination(currentPage, filters);
-
-                        function updateTableAndPagination(page, filters) {
-                            const queryParams = $.param({
-                                page: page,
-                                category: filters.category,
-                                tag: filters.tag,
-                                search: filters.search,
-                                sort_by: filters.sort_by,
-                                order: filters.order,
-                                date_from: filters.date_from,
-                                date_to: filters.date_to,
-                                price_from: filters.price_from,
-                                price_to: filters.price_to,
-                                gallery: filters.gallery
-                            });
-                    
-                            const query = `index.php?${queryParams}`;
-                            $('#mytable').load(`${query} #mytable`);
-                        }
-                    }
-                });
-        }
-            else{
                 var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
                 galleryContainer.empty();  
-                galleryContainer.append('');  
+                
+                gallery_images.forEach(function(image) {
+                    
+                    var img = galleryContainer.find('img[src="uploads/' + image + '"]');
+                    
+                    if (img.length > 0) {
+                        
+                        img.attr('src', 'uploads/' + image);
+                        
+                    } else {
+                        
+                    galleryContainer.append('<img src="uploads/' + image + '" alt="Gallery Image">');  
+
+                     var productIds = [];
+
+                    $('#tableID tr').each(function() {
+                        var id = $(this).find('.edit_button').data('id');
+                        if (id) { productIds.push(id); }
+                    });
+
+                    var filters = {
+                        category: $('#category').val() || '',
+                        tag: $('#tag').val() || '',
+                        search: $('#search').val() || '',
+                        sort_by: $('#sort_by').val() || '',
+                        order: $('#order').val() || '',
+                        date_from: $('#date_from').val() || '',
+                        date_to: $('#date_to').val() || '',
+                        price_from: $('#price_from').val() || '',
+                        price_to: $('#price_to').val() || '',
+                        gallery: $('#gallery').val() || ''
+                    };
+                    
+                    updateTableAndPagination(currentPage, filters);
+
+                    function updateTableAndPagination(page, filters) {
+                        const queryParams = $.param({
+                            page: page,
+                            category: filters.category,
+                            tag: filters.tag,
+                            search: filters.search,
+                            sort_by: filters.sort_by,
+                            order: filters.order,
+                            date_from: filters.date_from,
+                            date_to: filters.date_to,
+                            price_from: filters.price_from,
+                            price_to: filters.price_to,
+                            gallery: filters.gallery
+                        });
+                
+                        const query = `index.php?${queryParams}`;
+                        $('#mytable').load(`${query} #mytable`);
+                    }
+                }
+            });
+            }else {
+                
+                
+                var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
+                galleryContainer.empty();  
+                
+                gallery.forEach(function(image) {
+                    
+                    var img = galleryContainer.find('img[src="uploads/' + image + '"]');
+                    
+                    if (img.length > 0) {
+                        
+                        img.attr('src', 'uploads/' + image);
+                        
+                    } else {
+                        
+                    galleryContainer.append('<img src="uploads/' + image + '" alt="Gallery Image">');  
+
+                     var productIds = [];
+
+                    $('#tableID tr').each(function() {
+                        var id = $(this).find('.edit_button').data('id');
+                        if (id) { productIds.push(id); }
+                    });
+
+                    var filters = {
+                        category: $('#category').val() || '',
+                        tag: $('#tag').val() || '',
+                        search: $('#search').val() || '',
+                        sort_by: $('#sort_by').val() || '',
+                        order: $('#order').val() || '',
+                        date_from: $('#date_from').val() || '',
+                        date_to: $('#date_to').val() || '',
+                        price_from: $('#price_from').val() || '',
+                        price_to: $('#price_to').val() || '',
+                        gallery: $('#gallery').val() || ''
+                    };
+                    
+                    updateTableAndPagination(currentPage, filters);
+
+                    function updateTableAndPagination(page, filters) {
+                        const queryParams = $.param({
+                            page: page,
+                            category: filters.category,
+                            tag: filters.tag,
+                            search: filters.search,
+                            sort_by: filters.sort_by,
+                            order: filters.order,
+                            date_from: filters.date_from,
+                            date_to: filters.date_to,
+                            price_from: filters.price_from,
+                            price_to: filters.price_to,
+                            gallery: filters.gallery
+                        });
+                
+                        const query = `index.php?${queryParams}`;
+                        $('#mytable').load(`${query} #mytable`);
+                    }
+                }
+            });
+
             }
+
+        }
+        else{
+            var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
+            galleryContainer.empty();  
+            galleryContainer.append('');  
+        }
+            
+    
+        // if(gallery && gallery.name != ''){            
+                
+        //             var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
+        //             galleryContainer.empty();  
+                    
+        //             gallery.forEach(function(image) {
+                        
+        //                 var img = galleryContainer.find('img[src="uploads/' + image + '"]');
+                        
+        //                 if (img.length > 0) {
+                            
+                            
+        //                     img.attr('src', 'uploads/' + image);
+                            
+        //                 } else {
+        //                     console.log(image);
+                            
+        //                 galleryContainer.append('<img src="uploads/' + image + '" alt="Gallery Image">');  
+
+        //                  var productIds = [];
+
+        //                 $('#tableID tr').each(function() {
+        //                     var id = $(this).find('.edit_button').data('id');
+        //                     if (id) { productIds.push(id); }
+        //                 });
+
+        //                 var filters = {
+        //                     category: $('#category').val() || '',
+        //                     tag: $('#tag').val() || '',
+        //                     search: $('#search').val() || '',
+        //                     sort_by: $('#sort_by').val() || '',
+        //                     order: $('#order').val() || '',
+        //                     date_from: $('#date_from').val() || '',
+        //                     date_to: $('#date_to').val() || '',
+        //                     price_from: $('#price_from').val() || '',
+        //                     price_to: $('#price_to').val() || '',
+        //                     gallery: $('#gallery').val() || ''
+        //                 };
+                        
+        //                 updateTableAndPagination(currentPage, filters);
+
+        //                 function updateTableAndPagination(page, filters) {
+        //                     const queryParams = $.param({
+        //                         page: page,
+        //                         category: filters.category,
+        //                         tag: filters.tag,
+        //                         search: filters.search,
+        //                         sort_by: filters.sort_by,
+        //                         order: filters.order,
+        //                         date_from: filters.date_from,
+        //                         date_to: filters.date_to,
+        //                         price_from: filters.price_from,
+        //                         price_to: filters.price_to,
+        //                         gallery: filters.gallery
+        //                     });
+                    
+        //                     const query = `index.php?${queryParams}`;
+        //                     $('#mytable').load(`${query} #mytable`);
+        //                 }
+        //             }
+        //         });
+        // }else if(gallery_images != null){
+
+        //              console.log('ccgc'+gallery_images);
+                     
+                
+        //     var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
+        //     galleryContainer.empty();  
+            
+        //     gallery_images.forEach(function(image) {
+                
+        //         var img = galleryContainer.find('img[src="uploads/' + image + '"]');
+                
+        //         if (img.length > 0) {
+        //             console.log('cmn');
+                    
+                    
+        //             img.attr('src', 'uploads/' + image);
+                    
+        //         } else {
+        //             console.log(image);
+                    
+        //         galleryContainer.append('<img src="uploads/' + image + '" alt="Gallery Image">');  
+
+        //          var productIds = [];
+
+        //         $('#tableID tr').each(function() {
+        //             var id = $(this).find('.edit_button').data('id');
+        //             if (id) { productIds.push(id); }
+        //         });
+
+        //         var filters = {
+        //             category: $('#category').val() || '',
+        //             tag: $('#tag').val() || '',
+        //             search: $('#search').val() || '',
+        //             sort_by: $('#sort_by').val() || '',
+        //             order: $('#order').val() || '',
+        //             date_from: $('#date_from').val() || '',
+        //             date_to: $('#date_to').val() || '',
+        //             price_from: $('#price_from').val() || '',
+        //             price_to: $('#price_to').val() || '',
+        //             gallery: $('#gallery').val() || ''
+        //         };
+                
+        //         updateTableAndPagination(currentPage, filters);
+
+        //         function updateTableAndPagination(page, filters) {
+        //             const queryParams = $.param({
+        //                 page: page,
+        //                 category: filters.category,
+        //                 tag: filters.tag,
+        //                 search: filters.search,
+        //                 sort_by: filters.sort_by,
+        //                 order: filters.order,
+        //                 date_from: filters.date_from,
+        //                 date_to: filters.date_to,
+        //                 price_from: filters.price_from,
+        //                 price_to: filters.price_to,
+        //                 gallery: filters.gallery
+        //             });
+            
+        //             const query = `index.php?${queryParams}`;
+        //             $('#mytable').load(`${query} #mytable`);
+        //         }
+        //     }
+        // });
+
+        // }
+        // else{
+        //     var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
+        //     galleryContainer.empty();  
+        //     galleryContainer.append('');  
+        // }
 
         if (category && category.length > 0) {
         var categoryNames = category.map(function(cat) {
