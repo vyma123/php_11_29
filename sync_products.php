@@ -27,18 +27,96 @@ $response = curl_exec($curl);
 curl_close($curl);
 
 $doc = new DOMDocument();
-libxml_use_internal_errors(true); // Để bỏ qua lỗi nếu có (do HTML không hợp lệ)
+libxml_use_internal_errors(true); 
 $doc->loadHTML($response);
 
-// Lấy tất cả các thẻ h1
+$titles = [];  
+$colorArray = [];
+$priceArray = [];
+$sizeArray = [];
+
+
 $h1Tags = $doc->getElementsByTagName('h1');
 
-// Echo nội dung của thẻ h1 đầu tiên (nếu có)
 if ($h1Tags->length > 0) {
-    echo $h1Tags->item(0)->nodeValue;
+    $titles[] = $h1Tags->item(0)->nodeValue;
+
+    echo $titles[0];
 } else {
     echo "Không tìm thấy thẻ h1.";
 }
+
+$xpath = new DOMXPath($doc);
+$expProductElement = $xpath->query('//div[@exp_product]')->item(0);
+if ($expProductElement) {
+    $productId = $expProductElement->getAttribute('exp_product');
+    preg_match('/productId=(\d+)/', $productId, $matches);
+    if (isset($matches[1])) {
+        echo "Product ID: " . $matches[1] . "\n";
+    } else {
+        echo "Không tìm thấy productId.\n";
+    }
+} else {
+    echo "Không tìm thấy div có thuộc tính exp_product.\n";
+}
+
+$colorElements = $xpath->query('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob1"]/div)[1]//span[2]');
+if ($colorElements->length > 0) {
+    foreach ($colorElements as $colorElement) {
+        $colorArray[] = $colorElement->nodeValue;
+    }
+
+    foreach ($colorArray as $color) {
+        echo "Colorss: ff'.$color" . PHP_EOL;
+    }
+} else {
+    echo "Không tìm thấy màu sắc.\n";
+}
+
+$priceElements = $xpath->query('//div[contains(@class, "HazeProductPrice_SnowPrice__mainS")]');
+if ($priceElements->length > 0) {
+    foreach ($priceElements as $priceElement) {
+        $priceArray[] = $priceElement->nodeValue;
+    }
+
+    foreach ($priceArray as $price) {
+        echo "Colorss: prc'.$price" . PHP_EOL;
+    }
+} else {
+    echo "Không tìm thấy màu sắc.\n";
+}
+
+$sizeElements = $xpath->query('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/span[2]');
+if ($sizeElements->length > 0) {
+    foreach ($sizeElements as $sizeElement) {
+        $sizeArray[] = $sizeElement->nodeValue;
+    }
+
+    foreach ($sizeArray as $size) {
+        echo "Colorss: sz'.$size" . PHP_EOL;
+    }
+} else {
+    echo "Không tìm thấy màu sắc.\n";
+}
+
+
+$imageElements = $xpath->query('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img');
+if ($imageElements->length > 0) {
+    foreach ($imageElements as $imageElement) {
+        // Cast to DOMElement to avoid the IDE warning
+        if ($imageElement instanceof DOMElement) {
+            $imageSrcArray[] = $imageElement->getAttribute('src');
+        }
+    }
+
+    foreach ($imageSrcArray as $image) {
+        echo "Image Sourcdde: " . $image . PHP_EOL;
+    }
+} else {
+    echo "Không tìm thấy hình ảnh.\n";
+}
+
+
 
 
 use Goutte\Client;
@@ -54,74 +132,6 @@ $crawler = $client->request('GET', 'https://aliexpress.ru/item/1005007641037367.
 ]);
 
 
-
-$titles = [];  
-$colorArray = [];
-
-if ($crawler->filter('h1')->count() > 0) {
-    $titles[] = $crawler->filter('h1')->text();
-    $productId = $crawler->filter('div[exp_product]')->attr('exp_product');
-    preg_match('/productId=(\d+)/', $productId, $matches);
-} 
-
-if ($crawler->filterXPath('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob1"]/div)[1]//span[2]')->count() > 0) {
-    $crawler->filterXPath('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob1"]/div)[1]//span[2]')
-        ->each(function ($node) use (&$colorArray) {
-            $colorArray[] = $node->text();
-        });
-
-    foreach ($colorArray as $color) {
-        echo "colors: $color" . PHP_EOL;
-    }
-} else {
-    echo "no color";
-}
-
-$priceArray = [];
-
-if ($crawler->filterXPath('//div[contains(@class, "HazeProductPrice_SnowPrice__mainS")]')->count() > 0) {
-    $crawler->filterXPath('//div[contains(@class, "HazeProductPrice_SnowPrice__mainS")]')
-        ->each(function ($node) use (&$priceArray) {
-            $priceArray[] = $node->text();
-        });
-
-    foreach ($priceArray as $price) {
-        echo "price: " . $price . PHP_EOL;
-    }
-} else {
-    echo "no price!";
-}
-
-
-$sizeArray = [];
-
-if ($crawler->filterXPath('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/span[2]')->count() > 0) {
-    $crawler->filterXPath('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/span[2]')
-        ->each(function ($node) use (&$sizeArray) {
-            $sizeArray[] = $node->text();
-        });
-
-    foreach ($sizeArray as $size) {
-        echo "sizes: " . $size . PHP_EOL;
-    }
-} else {
-    echo "no size!";
-}
-
-$imageSrcArray = [];
-
-if ($crawler->filterXPath('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img')->count() > 0) {
-    $crawler->filterXPath('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img')
-        ->each(function ($node) use (&$imageSrcArray) {
-            $imageSrcArray[] = $node->attr('src');
-        });
-
-    foreach ($imageSrcArray as $image) {
-        echo "featured: " . $image . PHP_EOL;
-    }
-} else {
-    echo "no featured";
-}
 
 $imageSrcGalleryArray = [];
 
