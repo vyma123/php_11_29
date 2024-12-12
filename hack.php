@@ -1,7 +1,6 @@
 <?php
 $curl = curl_init();
 curl_setopt($curl, CURLOPT_USERAGENT, 'Curl');
-
 curl_setopt_array($curl, array(
     CURLOPT_URL => "https://aliexpress.ru/item/1005007641037367.html?sku_id=12000041611596822",
     CURLOPT_CUSTOMREQUEST => "GET",
@@ -15,6 +14,24 @@ curl_setopt_array($curl, array(
     ),
 ));
 
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+
 $response = curl_exec($curl);
-$err = curl_error($curl);
+
+// Đóng cURL
+curl_close($curl);
+
+$doc = new DOMDocument();
+libxml_use_internal_errors(true); // Để bỏ qua lỗi nếu có (do HTML không hợp lệ)
+$doc->loadHTML($response);
+
+// Lấy tất cả các thẻ h1
+$h1Tags = $doc->getElementsByTagName('h1');
+
+// Echo nội dung của thẻ h1 đầu tiên (nếu có)
+if ($h1Tags->length > 0) {
+    echo $h1Tags->item(0)->nodeValue;
+} else {
+    echo "Không tìm thấy thẻ h1.";
+}
 ?>
