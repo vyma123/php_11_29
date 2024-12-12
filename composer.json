@@ -1,6 +1,5 @@
 {
     "require": {
-        "fabpot/goutte": "^4.0",
-        "stichoza/google-translate-php": "^5.2"
+        "fabpot/goutte": "^4.0"
     }
 }
