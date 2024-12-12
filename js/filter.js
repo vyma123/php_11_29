@@ -17,7 +17,6 @@ if (priceInput1.trim() !== "" && !regexprice.test(priceInput1)) {
     $('#price_from').removeClass('err_border');  
 
 }
-console.log("Giá trị nhập: ", priceInput1);
 
 if (priceInput2.trim() !== "" && !regexprice.test(priceInput2) || priceInput2.trim() !== "" && priceInput2.trim() < 0) {
     $('#price_to').addClass('err_border');  

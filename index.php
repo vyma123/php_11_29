@@ -84,9 +84,9 @@ include './includes/select_products.php';
                 <div class="ui input"><input type="date" id="date_from"></div>
                 <div class="ui input"><input type="date" id="date_to"></div>
                 <div class="ui input">
-                    <input class="" type="text" id="price_from" placeholder="price from">
+                    <input class="" type="number" id="price_from" placeholder="price from">
                 </div>
-                <div class="ui input"><input  type="text" id="price_to" placeholder="price to"></div>
+                <div class="ui input"><input  type="number" id="price_to" placeholder="price to"></div>
                 <button id="filter" onclick="handleFilterClick(event)" class="ui button">Filter</button>
             </div>
         </div>
