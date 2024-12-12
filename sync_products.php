@@ -19,8 +19,8 @@ $crawler = $client->request('GET', 'https://aliexpress.ru/item/1005007641037367.
 $titles = [];  
 $colorArray = [];
 
-if ($crawler->filter('title')->count() > 0) {
-    $titles[] = $crawler->filter('title')->text();
+if ($crawler->filter('h1')->count() > 0) {
+    $titles[] = $crawler->filter('h1')->text();
     $productId = $crawler->filter('div[exp_product]')->attr('exp_product');
     preg_match('/productId=(\d+)/', $productId, $matches);
 } 
@@ -39,44 +39,70 @@ if ($crawler->filterXPath('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob
     echo "no color";
 }
 
-$productId = isset($matches[1]) ? $matches[1] : null;
-
-$httpClient = new \Goutte\Client();
-
-
-$response = $httpClient->request('GET', 'https://aliexpress.ru/item/1005007641037367.html?sku_id=12000041611596822');
-
-// $titles = $response->evaluate('//h1[@class="snow-ali-kit_Typography__base__1shggo snow-ali-kit_Typography-Primary__base__1xop0e snow-ali-kit_Typography__strong__1shggo snow-ali-kit_Typography__sizeHeadingL__1shggo HazeProductDescription_HazeProductDescription__name__1fmsi HazeProductDescription_HazeProductDescription__smallText__1fmsi"]');
-
-$prices = $response->evaluate('//div[contains(@class, "HazeProductPrice_SnowPrice__mainS")]');
-
-$colors = $response->evaluate('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob1"]/div)[1]//span[2]');
-
-$sizes = $response->evaluate('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/span[2]');
-
-$featured_images = $response->evaluate('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img');
-
-$galleryImages = $response->evaluate('//div[contains(@class, "SnowProductGallery__previews")]//div/picture/img');
-
 $priceArray = [];
-foreach ($prices as $key => $price) {
-    $priceArray[] = $price->textContent;
+
+if ($crawler->filterXPath('//div[contains(@class, "HazeProductPrice_SnowPrice__mainS")]')->count() > 0) {
+    $crawler->filterXPath('//div[contains(@class, "HazeProductPrice_SnowPrice__mainS")]')
+        ->each(function ($node) use (&$priceArray) {
+            $priceArray[] = $node->text();
+        });
+
+    foreach ($priceArray as $price) {
+        echo "price: " . $price . PHP_EOL;
+    }
+} else {
+    echo "no price!";
 }
 
+
 $sizeArray = [];
-foreach ($sizes as $size) {
-    $sizeArray[] = $size->textContent;
+
+if ($crawler->filterXPath('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/span[2]')->count() > 0) {
+    $crawler->filterXPath('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/span[2]')
+        ->each(function ($node) use (&$sizeArray) {
+            $sizeArray[] = $node->text();
+        });
+
+    foreach ($sizeArray as $size) {
+        echo "sizes: " . $size . PHP_EOL;
+    }
+} else {
+    echo "no size!";
 }
 
 $imageSrcArray = [];
-foreach ($featured_images as $image) {
-    $imageSrcArray[] = $image->getAttribute('src');
+
+if ($crawler->filterXPath('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img')->count() > 0) {
+    $crawler->filterXPath('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img')
+        ->each(function ($node) use (&$imageSrcArray) {
+            $imageSrcArray[] = $node->attr('src');
+        });
+
+    foreach ($imageSrcArray as $image) {
+        echo "featured: " . $image . PHP_EOL;
+    }
+} else {
+    echo "no featured";
 }
 
 $imageSrcGalleryArray = [];
-foreach ($galleryImages as $image) {
-    $imageSrcGalleryArray[] = $image->getAttribute('src');
+
+if ($crawler->filterXPath('//div[contains(@class, "SnowProductGallery__previews")]//div/picture/img')->count() > 0) {
+    $crawler->filterXPath('//div[contains(@class, "SnowProductGallery__previews")]//div/picture/img')
+        ->each(function ($node) use (&$imageSrcGalleryArray) {
+            $imageSrcGalleryArray[] = $node->attr('src');
+        });
+
+    foreach ($imageSrcGalleryArray as $image) {
+        echo "gallery: " . $image . PHP_EOL;
+    }
+} else {
+    echo "no gallery!";
 }
+
+
+$productId = isset($matches[1]) ? $matches[1] : null;
+
 
 function convertPriceToUSD($rubPrice) {
     return $rubPrice * 0.01;
@@ -128,6 +154,8 @@ foreach ($titles as $key => $title) {
         foreach ($sizeArray as $size) {
             $name = $title . ' ' . $color . ' ' . $size;
 
+            echo $name;
+
             $productId++;
 
             $checkStmt = $pdo->prepare('SELECT crawl_p_id FROM products WHERE crawl_p_id = :crawl_p_id');
@@ -150,7 +178,7 @@ foreach ($titles as $key => $title) {
                     featured_image = :featured_image
                 WHERE crawl_p_id = :crawl_p_id');
                 $updateStmt->execute([
-                'product_name' => $title,
+                'product_name' => $name,
                 'sku' => $sku,
                 'price' => $usdPrice,
                 'featured_image' => $imageNameOnly,
