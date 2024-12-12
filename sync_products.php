@@ -17,6 +17,7 @@ $crawler = $client->request('GET', 'https://aliexpress.ru/item/1005007641037367.
 ]);
 
 $titles = [];  
+$colorArray = [];
 
 if ($crawler->filter('title')->count() > 0) {
     $titles[] = $crawler->filter('title')->text();
@@ -24,11 +25,24 @@ if ($crawler->filter('title')->count() > 0) {
     preg_match('/productId=(\d+)/', $productId, $matches);
 } 
 
+
+if ($crawler->filterXPath('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob1"]/div)[1]//span[2]')->count() > 0) {
+    $crawler->filterXPath('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob1"]/div)[1]//span[2]')
+        ->each(function ($node) use (&$colorArray) {
+            $colorArray[] = $node->text();
+        });
+
+    foreach ($colorArray as $color) {
+        echo "colors: $color" . PHP_EOL;
+    }
+} else {
+    echo "no color";
+}
+
 $productId = isset($matches[1]) ? $matches[1] : null;
 
 $httpClient = new \Goutte\Client();
 
-use Stichoza\GoogleTranslate\GoogleTranslate;
 
 $response = $httpClient->request('GET', 'https://aliexpress.ru/item/1005007641037367.html?sku_id=12000041611596822');
 
@@ -48,12 +62,6 @@ $priceArray = [];
 foreach ($prices as $key => $price) {
     $priceArray[] = $price->textContent;
 }
-
-$colorArray = [];
-foreach ($colors as $color) {
-    $colorArray[] = $color->textContent;
-}
-
 
 $sizeArray = [];
 foreach ($sizes as $size) {
@@ -115,10 +123,10 @@ foreach ($titles as $key => $title) {
 
     foreach ($colorArray as $color) {
 
-    $translatedColor = GoogleTranslate::trans($color, 'en', 'ru');
+    echo 'mau'.$color;
 
         foreach ($sizeArray as $size) {
-            $name = $title . ' ' . $translatedColor . ' ' . $size;
+            $name = $title . ' ' . $color . ' ' . $size;
 
             $productId++;
 

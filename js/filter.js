@@ -6,16 +6,18 @@ function validatePrice(event) {
     const priceInput1 = document.getElementById("price_from").value;
     const priceInput2 = document.getElementById("price_to").value;
     const regexprice = /^[0-9.]+$/;
+
     let hasError = false;
 
 if (priceInput1.trim() !== "" && !regexprice.test(priceInput1)) {
     $('#price_from').addClass('err_border');  
 
-    console.log("price numbers, and hyphens (no spaces)");
     hasError = true;
 } else {
     $('#price_from').removeClass('err_border');  
+
 }
+console.log("Giá trị nhập: ", priceInput1);
 
 if (priceInput2.trim() !== "" && !regexprice.test(priceInput2) || priceInput2.trim() !== "" && priceInput2.trim() < 0) {
     $('#price_to').addClass('err_border');  

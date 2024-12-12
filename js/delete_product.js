@@ -2,8 +2,6 @@ const confirm_yes = $('.confirm-yes');
 const confirm_no = $('.confirm-no'); 
 
 
-
-
 $(document).off('click', 'edit_button').on('click', '.delete_button', function(e) {
     e.preventDefault();
 
