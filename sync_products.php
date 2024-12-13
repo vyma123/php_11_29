@@ -1,9 +1,6 @@
 <?php
 require_once 'includes/db.inc.php';
 require 'includes/functions.php';
-require 'vendor/autoload.php';
-
-
 
 $curl = curl_init();
 curl_setopt($curl, CURLOPT_USERAGENT, 'Curl');
@@ -34,6 +31,7 @@ $titles = [];
 $colorArray = [];
 $priceArray = [];
 $sizeArray = [];
+$imageSrcGalleryArray = [];
 
 
 $h1Tags = $doc->getElementsByTagName('h1');
@@ -41,9 +39,8 @@ $h1Tags = $doc->getElementsByTagName('h1');
 if ($h1Tags->length > 0) {
     $titles[] = $h1Tags->item(0)->nodeValue;
 
-    echo $titles[0];
 } else {
-    echo "Không tìm thấy thẻ h1.";
+    echo "NO H1.";
 }
 
 $xpath = new DOMXPath($doc);
@@ -54,10 +51,10 @@ if ($expProductElement) {
     if (isset($matches[1])) {
         echo "Product ID: " . $matches[1] . "\n";
     } else {
-        echo "Không tìm thấy productId.\n";
+        echo "no productId.\n";
     }
 } else {
-    echo "Không tìm thấy div có thuộc tính exp_product.\n";
+    echo "no exp_product.\n";
 }
 
 $colorElements = $xpath->query('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob1"]/div)[1]//span[2]');
@@ -66,11 +63,8 @@ if ($colorElements->length > 0) {
         $colorArray[] = $colorElement->nodeValue;
     }
 
-    foreach ($colorArray as $color) {
-        echo "Colorss: ff'.$color" . PHP_EOL;
-    }
 } else {
-    echo "Không tìm thấy màu sắc.\n";
+    echo "no color.\n";
 }
 
 $priceElements = $xpath->query('//div[contains(@class, "HazeProductPrice_SnowPrice__mainS")]');
@@ -78,12 +72,8 @@ if ($priceElements->length > 0) {
     foreach ($priceElements as $priceElement) {
         $priceArray[] = $priceElement->nodeValue;
     }
-
-    foreach ($priceArray as $price) {
-        echo "Colorss: prc'.$price" . PHP_EOL;
-    }
 } else {
-    echo "Không tìm thấy màu sắc.\n";
+    echo "no price.\n";
 }
 
 $sizeElements = $xpath->query('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/span[2]');
@@ -91,63 +81,34 @@ if ($sizeElements->length > 0) {
     foreach ($sizeElements as $sizeElement) {
         $sizeArray[] = $sizeElement->nodeValue;
     }
-
-    foreach ($sizeArray as $size) {
-        echo "Colorss: sz'.$size" . PHP_EOL;
-    }
 } else {
-    echo "Không tìm thấy màu sắc.\n";
+    echo "no size.\n";
 }
 
 
 $imageElements = $xpath->query('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img');
 if ($imageElements->length > 0) {
     foreach ($imageElements as $imageElement) {
-        // Cast to DOMElement to avoid the IDE warning
         if ($imageElement instanceof DOMElement) {
             $imageSrcArray[] = $imageElement->getAttribute('src');
         }
     }
 
-    foreach ($imageSrcArray as $image) {
-        echo "Image Sourcdde: " . $image . PHP_EOL;
-    }
 } else {
-    echo "Không tìm thấy hình ảnh.\n";
+    echo "no image.\n";
 }
 
-
-
-
-use Goutte\Client;
-use Symfony\Component\BrowserKit\Cookie;
-
-$client = new Client();
-
-$client->getCookieJar()->set(new Cookie('aer_lang', 'en_US', time() + 3600, '/')); 
-
-$crawler = $client->request('GET', 'https://aliexpress.ru/item/1005007641037367.html?sku_id=12000041611596822', [], [], [
-    'HTTP_ACCEPT_LANGUAGE' => 'en-US,en;q=0.8', 
-    'HTTP_USER_AGENT' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-]);
-
-
-
-$imageSrcGalleryArray = [];
-
-if ($crawler->filterXPath('//div[contains(@class, "SnowProductGallery__previews")]//div/picture/img')->count() > 0) {
-    $crawler->filterXPath('//div[contains(@class, "SnowProductGallery__previews")]//div/picture/img')
-        ->each(function ($node) use (&$imageSrcGalleryArray) {
-            $imageSrcGalleryArray[] = $node->attr('src');
-        });
-
-    foreach ($imageSrcGalleryArray as $image) {
-        echo "gallery: " . $image . PHP_EOL;
+$imageGallery = $xpath->query('//div[contains(@class, "SnowProductGallery__previews")]//div/picture/img');
+if ($imageGallery->length > 0) {
+    foreach ($imageGallery as $gallery) {
+        if ($gallery instanceof DOMElement) {
+            $imageSrcGalleryArray[] = $gallery->getAttribute('src');
+        }
     }
-} else {
-    echo "no gallery!";
-}
 
+} else {
+    echo "no image.\n";
+}
 
 $productId = isset($matches[1]) ? $matches[1] : null;
 
@@ -197,12 +158,10 @@ foreach ($titles as $key => $title) {
 
     foreach ($colorArray as $color) {
 
-    echo 'mau'.$color;
 
         foreach ($sizeArray as $size) {
             $name = $title . ' ' . $color . ' ' . $size;
 
-            echo $name;
 
             $productId++;
 
