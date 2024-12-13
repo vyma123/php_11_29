@@ -110,7 +110,7 @@ foreach ($results as $row) {
 }else{
     $content .= '
         <tr>
-            <td colspan="9" style="text-align: center;">Product not found</td>
+            <td colspan="9">Product not found</td>
         </tr>
     ';
 }

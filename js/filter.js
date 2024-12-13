@@ -54,6 +54,15 @@ function loadApplyFilters(event) {
 	}, 400);
 }
 
+document.getElementById("search").addEventListener("input", function(event) {
+    loadApplyFilters(event);
+});
+
+document.getElementById("filter").addEventListener("click", function(event) {
+    handleFilterClick(event);
+  });
+  
+
 function applyFilters(event) {
 
     event.preventDefault();

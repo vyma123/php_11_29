@@ -8,6 +8,19 @@ $tags = getPropertiesByType($pdo, 'tag');
 
 if (isset($_POST['action_type'])) {
     $action_type = $_POST['action_type'];
+
+    $featured_image = $_FILES['featured_image'];
+
+    $featuredName = $featured_image['name'];
+    $featuredTmpName = $featured_image['tmp_name'];
+    $featuredSize = $featured_image['size'];
+    $featuredError = $featured_image['error'];
+    $featuredType = $featured_image['type'];
+
+    $featuredExt = explode('.', $featuredName);
+    $featuredActualExt = strtolower(end($featuredExt));
+ 
+    $allowed = array('png', 'jpg', 'jpeg', 'gif','webp', 'bmp', 'svg+xml', 'tiff','ico');
     
     if ($action_type === 'edit_product') { 
 
@@ -15,6 +28,7 @@ if (isset($_POST['action_type'])) {
         $product_name = test_input($_POST['product_name']);
         $sku = test_input($_POST['sku']);
         $price = test_input($_POST['price']);
+       
         $gallery_images = $_FILES['gallery'];
          
         $selected_categories = isset($_POST['categories']) ? json_decode($_POST['categories'], true) : [];
@@ -26,11 +40,22 @@ if (isset($_POST['action_type'])) {
             if ($count > 0) {
                 $errors[] = [
                     'field' => 'exist',
-                    'message' => 'The SKU already exists for another product.'
+                    'message' => 'exist sku.'
                 ];
             }
         }
+        if(!isValidInputSKU($sku)){
+            $errors[] = [
+                'message' => 'error.'
+            ];
+        }
 
+        if (!isValidNumberWithDotInput($price) && !empty($price)) {
+            $errors[] = [
+                'field' => 'price',
+                'message' => 'just allow number'
+            ];
+        }
      
         if (!empty($errors)) {
             $res = [
@@ -43,49 +68,51 @@ if (isset($_POST['action_type'])) {
         }
        
             
-            $featured_image = $_FILES['featured_image'];
-            $new_file_name = '';
-            
-        if (isset($featured_image) && $featured_image['size'] > 0) {
-            
-            $file_extension = pathinfo($featured_image['name'], PATHINFO_EXTENSION);
-    
-            $new_file_name = str_replace('.', '', uniqid('file_', true)) . '.' . $file_extension;
+        $new_file_name = '';
+        
+        if (in_array($featuredActualExt, $allowed)) {
+            if($featuredError === 0){
+                if($featuredSize < 5 * 1024 * 1024){
+                $new_file_name = uniqid('', true).".".$featuredActualExt;
+                $file_tmp_name = $featured_image['tmp_name'];
+                $upload_dir = 'uploads/';
+                if (!file_exists($upload_dir)) {
+                    mkdir($upload_dir, 0777, true); 
+                }
 
+            move_uploaded_file($file_tmp_name, $upload_dir . $new_file_name);
+            if(empty($sku)){
+                $sku = generateSKU($pdo);
+                update_product($pdo, $product_id ,$product_name, $sku, $price, $new_file_name);
+            }else{
+                update_product($pdo, $product_id ,$product_name, $sku, $price, $new_file_name);
+            }
+        }else {
+            $res = ['error' => 'Your file is too big!'];
+            echo json_encode($res);
+            return;
         }
-            $upload_path = 'uploads/' . $new_file_name;
-           
-            $file_tmp_name = $featured_image['tmp_name'];
-            
-            $upload_dir = 'uploads/';
-            if (!file_exists($upload_dir)) {
-                mkdir($upload_dir, 0777, true); 
+        }else{
+            $res = ['error' => 'There was an error uploading your file!'];
+            echo json_encode($res);
+            return;
+        }
+          
+        }else if(isset($_POST['imageHidden']) && $_POST['imageHidden'] === 'true'){
+            if(empty($sku)){
+                $sku = generateSKU($pdo);
+                update_product($pdo, $product_id ,$product_name, $sku, $price, '');
+            }else{
+                update_product($pdo, $product_id ,$product_name, $sku, $price, '');
             }
-    
-
-            if (move_uploaded_file($file_tmp_name, $upload_dir . $new_file_name)) {
-                if(empty($sku)){
-                    $sku = generateSKU($pdo);
-                    update_product($pdo, $product_id ,$product_name, $sku, $price, $new_file_name);
-                }else{
-                    update_product($pdo, $product_id ,$product_name, $sku, $price, $new_file_name);
-                }
-            } else if(isset($_POST['imageHidden']) && $_POST['imageHidden'] === 'true'){
-                if(empty($sku)){
-                    $sku = generateSKU($pdo);
-                    update_product($pdo, $product_id ,$product_name, $sku, $price, '');
-                }else{
-                    update_product($pdo, $product_id ,$product_name, $sku, $price, '');
-                }
+        }else{
+            if(empty($sku)){
+                $sku = generateSKU($pdo);
+                update_product_no_image($pdo, $product_id ,$product_name, $sku, $price);
+            }else{
+                update_product_no_image($pdo, $product_id ,$product_name, $sku, $price);
             }
-            else{
-                if(empty($sku)){
-                    $sku = generateSKU($pdo);
-                    update_product_no_image($pdo, $product_id ,$product_name, $sku, $price);
-                }else{
-                    update_product_no_image($pdo, $product_id ,$product_name, $sku, $price);
-                }
-            }
+        }
        
         
         if (isset($_FILES['gallery'])) {
@@ -110,7 +137,7 @@ if (isset($_POST['action_type'])) {
                 if(!empty($file_name) && is_string($file_name)){
                     $file_extension = pathinfo($file_name, PATHINFO_EXTENSION); 
                     $new_gallery_file_name = str_replace('.', '', uniqid('gallery_', true)) . '.' . $file_extension;
-                    $new_file_names[] = $new_gallery_file_name; // Thêm tên file mới vào mảng
+                    $new_file_names[] = $new_gallery_file_name; 
 
                 }
                 
@@ -177,10 +204,8 @@ if (isset($_POST['action_type'])) {
         $featured_imageN = null;
         $name_F = '';
 
-        
         $name_F = $new_file_name;
         
-
         if (isset($featured_image) && $featured_image['error'] === UPLOAD_ERR_NO_FILE) {
             $query = "SELECT featured_image FROM products WHERE id = :product_id";
             $stmt = $pdo->prepare($query);
@@ -239,7 +264,6 @@ if (isset($_POST['action_type'])) {
         $sku = test_input($_POST['sku']);
         $price = test_input($_POST['price']);
 
-        $featured_image = $_FILES['featured_image'];
 
         $gallery_images = $_FILES['gallery'];
         $errors = [];
@@ -260,6 +284,19 @@ if (isset($_POST['action_type'])) {
             }
         }
 
+        if(!isValidInputSKU($sku)){
+            $errors[] = [
+                'message' => 'error.'
+            ];
+        }
+
+        if (!isValidNumberWithDotInput($price) && !empty($price)) {
+            $errors[] = [
+                'field' => 'price',
+                'message' => 'just allow number'
+            ];
+        }
+
         if (!empty($errors)) {
             $res = [
                 'status' => '400',
@@ -269,28 +306,45 @@ if (isset($_POST['action_type'])) {
             return;
         }
 
-        $featured_image = $_FILES['featured_image']; 
         $new_file_name = '';
+        $product_id = null;
 
-        if (isset($featured_image) && $featured_image['size'] > 0) {
-
-        $file_extension = pathinfo($featured_image['name'], PATHINFO_EXTENSION);
-
-        $new_file_name = str_replace('.', '', uniqid('file_', true)) . '.' . $file_extension;
-
-
-        }
-
-        $upload_path = 'uploads/' . $new_file_name;
-
-        move_uploaded_file($featured_image['tmp_name'], $upload_path);
-
-               if(empty($sku)){
-                   $sku = generateSKU($pdo);
-                   $product_id = insert_product($pdo, $product_name, $sku, $price, $new_file_name);
-                }else{
-                    $product_id = insert_product($pdo, $product_name, $sku, $price, $new_file_name);
+                if (in_array($featuredActualExt, $allowed)) {
+                    if($featuredError === 0){
+                        if($featuredSize < 5 * 1024 * 1024){
+                        $new_file_name = uniqid('', true).".".$featuredActualExt;
+                        $file_tmp_name = $featured_image['tmp_name'];
+                        $upload_dir = 'uploads/';
+                        if (!file_exists($upload_dir)) {
+                            mkdir($upload_dir, 0777, true); 
+                        }
+        
+                    move_uploaded_file($file_tmp_name, $upload_dir . $new_file_name);
+                    if(empty($sku)){
+                        $sku = generateSKU($pdo);
+                        $product_id = insert_product($pdo, $product_name, $sku, $price, $new_file_name);
+                     }else{
+                         $product_id = insert_product($pdo, $product_name, $sku, $price, $new_file_name);
+                     }
+                }else {
+                    $res = ['error' => 'Your file is too big!'];
+                    echo json_encode($res);
+                    return;
                 }
+                }else{
+                    $res = ['error' => 'There was an error uploading your file!'];
+                    echo json_encode($res);
+                    return;
+                }
+                  
+                }else {
+                    if(empty($sku)){
+                        $sku = generateSKU($pdo);
+                        $product_id = insert_product($pdo, $product_name, $sku, $price, $new_file_name);
+                     }else{
+                         $product_id = insert_product($pdo, $product_name, $sku, $price, $new_file_name);
+                     }                
+                    }
                 
                 if (!$product_id) {
                     echo json_encode(['status' => 500, 'message' => 'Failed to insert product.']);

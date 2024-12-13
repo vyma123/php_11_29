@@ -1,10 +1,23 @@
 const toast = document.getElementById("errMessage");
 
-
 const removeToast = (toast, className) => {
     toast.classList.remove(className);
     toast.classList.add("remove");
 };
+
+document.querySelectorAll('.close.icon').forEach(element => {
+    element.addEventListener('click', function() {
+        if (this.classList.contains('succ')) {
+            removeToast(this.parentElement, 'flexSPr');
+        } else if (this.classList.contains('nochanges_close')) {
+            removeToast(this.parentElement, 'flexWP');
+        }else if (this.classList.contains('succ_property')){
+            removeToast(this.parentElement, 'flexSP');
+
+        }
+    });
+});
+
 let toastTimeout = null; 
 
 $(function(){

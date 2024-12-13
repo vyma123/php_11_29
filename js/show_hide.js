@@ -36,6 +36,9 @@ $('#featured_image').on('change', function() {
     const fileInput = this;
     const file = fileInput.files[0];
 
+
+    const maxFileSize = 5 * 1024 * 1024; 
+
     const acceptedFormats = [
         "image/png", 
         "image/jpg", 
@@ -53,7 +56,20 @@ $('#featured_image').on('change', function() {
     }
 
     const fileType = file.type;
-    if (acceptedFormats.includes(fileType)) {
+    const fileSize = file.size;
+
+    if (!acceptedFormats.includes(fileType)) {
+        $('#required_featured').removeClass('d-none');
+        fileInput.value = ""; 
+        return;
+    }
+
+    if (fileSize > maxFileSize) {
+        $('#required_featured').text('File size is too large! Maximum allowed size is 5 MB.').removeClass('d-none');
+        fileInput.value = ""; 
+        return;
+    }
+
         $('#required_featured').addClass('d-none');
 
         const reader = new FileReader(); 
@@ -66,10 +82,7 @@ $('#featured_image').on('change', function() {
         $('.close_image').attr('style', 'display: flex !important');
         $('.ui.small.image.box_input.box_featured').attr('style', 'display: none !important');
 
-    } else {
-        $('#required_featured').removeClass('d-none');
-        fileInput.value = ""; 
-    }
+   
 });
 
 $('.close_image').on('click', function() {

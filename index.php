@@ -34,7 +34,7 @@ include './includes/select_products.php';
                     <div class="ui centered inline loader "></div>
                 </div>
                 <div class="ui icon input">
-                    <input id="search" type="text"  oninput="loadApplyFilters(event)" placeholder="Search product..." value="">
+                    <input id="search" type="text" placeholder="Search product..." value="">
                 </div>
             </div>
             <div class="product_header_bottom">
@@ -87,7 +87,7 @@ include './includes/select_products.php';
                     <input class="" type="number" id="price_from" placeholder="price from">
                 </div>
                 <div class="ui input"><input  type="number" id="price_to" placeholder="price to"></div>
-                <button id="filter" onclick="handleFilterClick(event)" class="ui button">Filter</button>
+                <button id="filter" class="ui button">Filter</button>
             </div>
         </div>
      
@@ -184,7 +184,7 @@ include './includes/select_products.php';
             </tr> 
             <?php }}else {?>
                 <tr>
-                    <td colspan="9" style="text-align: center;">Product not found</td>
+                    <td colspan="9" >Product not found</td>
                 </tr>
                 <?php }?>
             </tbody>
@@ -252,8 +252,6 @@ include './includes/select_products.php';
         </div>
     </div>
     </div>
-
-    
 
 </section>
     <script src="./js/submit_product.js" defer></script>

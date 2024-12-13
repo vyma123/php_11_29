@@ -44,14 +44,15 @@ function validateForm(event) {
     const regexprice = /^[0-9.]+$/;
     $('#okMessageProduct').removeClass('flexSPr');   
 
-
     let hasError = false;
 
     if (productName.trim() === "") {
         $('#noChanges').removeClass('flexWP');     
         $('#required').removeClass('d-none'); 
         $('#checkstring').addClass('d-none');  
-        $('#okMessageProduct').removeClass('flexSPr');      
+        $('#okMessageProduct').removeClass('flexSPr');     
+        $('#required_featured').addClass('d-none');
+        
 
         hasError = true;
     } else {
@@ -66,7 +67,9 @@ if (sku.trim() !== "" && !regexsku.test(sku.trim())) {
     $('#skuexist').addClass('d-none'); 
     $('#checksku').removeClass('d-none');  
     $('#noChanges').removeClass('flexWP');      
-    $('#okMessageProduct').removeClass('flexSPr');    
+    $('#okMessageProduct').removeClass('flexSPr');   
+    $('#required_featured').addClass('d-none');
+
 
     hasError = true;
 } else {
@@ -76,7 +79,8 @@ if (sku.trim() !== "" && !regexsku.test(sku.trim())) {
 if (priceInput.trim() !== "" && !regexprice.test(priceInput)) {
     $('#checknumber').removeClass('d-none');  
     $('#noChanges').removeClass('flexWP');  
-    $('#okMessageProduct').removeClass('flexSPr');      
+    $('#okMessageProduct').removeClass('flexSPr');  
+    $('#required_featured').addClass('d-none');
 
     hasError = true;
 } else {
@@ -150,6 +154,7 @@ $(document).on('click', '#editProductButton', function() {
 
 $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(e){
 	e.preventDefault();
+
 
     if (isProductNameUnchanged) {
         return;
@@ -299,6 +304,10 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                 var gallery = res.gallery;
                 var gallery_images = res.gallery_images;
 
+                console.log('n'+featuredImageN);
+                console.log('nv'+featuredImage);
+
+                
                 
 
        $('#tableID').find('.edit_button').each(function() {
@@ -322,7 +331,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
             if((featuredImage && featuredImage !== '') || (featuredImageN && featuredImageN !== '')){
 
                 if(featuredImageN && featuredImageN !== ''){
-                console.log('k'+featuredImageN);
                 
                     button.closest('tr')
                     .find('.featured_image img')
@@ -351,7 +359,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
             if( (gallery_images && gallery_images !== '') || (gallery && gallery.name !== '') ){
 
             if(Array.isArray(gallery_images) && gallery_images.length > 0){            
-                console.log('aaaa'+ typeof gallery_images);
                 
                 var galleryContainer = button.closest('tr').find('.gallery .gallery-container');
                 galleryContainer.empty();  

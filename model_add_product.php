@@ -4,7 +4,7 @@
     <div class="header">
     Product Update successfully.
     </div>
-    <i class="close icon" onclick="removeToast(this.parentElement, 'flexSPr')"></i>
+    <i class="close icon succ"></i>
   </div>
 
   <div id="okMessageProduct" class="ui success toast message toast_success">
@@ -12,7 +12,7 @@
       <div class="header">
       Product Added successfully.
       </div>
-    <i class="close icon" onclick="removeToast(this.parentElement, 'flexSPr')"></i>
+    <i class="close icon succ"></i>
     </div>
 
     <div id="noChanges" class="ui negative toast message toast_error">
@@ -20,13 +20,13 @@
       <div class="header">
       No changes detected.
       </div>
-    <i class="close icon" onclick="removeToast(this.parentElement, 'flexWP')"></i>
+    <i class="close icon nochanges_close"></i>
       </div>
 
 <div class="ui modal product_box">
   <!-- form -->
   
-  <form class="ui form form_add_products" class='editProduct' id="saveProduct" onsubmit="return validateForm()" enctype="multipart/form-data">
+  <form class="ui form form_add_products" class='editProduct' id="saveProduct" enctype="multipart/form-data">
 
     <div class="field">
       <label class="product_name_label">Product Name </label>

@@ -26,8 +26,6 @@ if (is_dir($uploadDir)) {
             unlink($file); 
         }
     }
-    
-  
 }
    
     $stmt = $pdo->prepare("DELETE FROM property where type_ = 'gallery'"); 
@@ -36,9 +34,6 @@ if (is_dir($uploadDir)) {
     'success' => true,
     'count' => $count['count'],
     ['countf' => count($files)]
-
-
-
     
 ]);
 

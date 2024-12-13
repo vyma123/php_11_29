@@ -201,6 +201,7 @@ let selectedTagNames = [];
                         $('#noChanges').addClass('flexWP');     
                         $('#checksku').addClass('d-none');  
                         $('#checknumber').addClass('d-none');      
+                        $('#required_featured').addClass('d-none');
 
 
                         console.log("No changes detected."); 

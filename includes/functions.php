@@ -20,6 +20,8 @@ function isValidInput($input){
     return preg_match('/^[\p{L}0-9 .,–\-_]+$/u', $input);
 }
 
+
+
 function insert_property(object $pdo, string $type_, string $name_) {
     try {
         $data = [

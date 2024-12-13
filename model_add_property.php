@@ -3,7 +3,7 @@
   <div class="header">
   At least one field is required.  
   </div>
-  <i class="close icon" onclick="removeToast(this.parentElement, 'flexWP')"></i>
+  <i class="close icon nochanges_close"></i>
   </div>
 
   <div id="okMessage" class="ui success toast message toast_success">
@@ -11,7 +11,7 @@
     <div class="header">
     Added successfully.
     </div>
-    <i class="close icon" onclick="removeToast(this.parentElement, 'flexSP')"></i>
+    <i class="close icon succ_property"></i>
   </div>
 
 <div class="ui modal category_box">
