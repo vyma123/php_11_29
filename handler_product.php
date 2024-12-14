@@ -8,29 +8,24 @@ $tags = getPropertiesByType($pdo, 'tag');
 
 if (isset($_POST['action_type'])) {
     $action_type = $_POST['action_type'];
-
     $featured_image = $_FILES['featured_image'];
-
     $featuredName = $featured_image['name'];
     $featuredTmpName = $featured_image['tmp_name'];
     $featuredSize = $featured_image['size'];
     $featuredError = $featured_image['error'];
     $featuredType = $featured_image['type'];
-
     $featuredExt = explode('.', $featuredName);
     $featuredActualExt = strtolower(end($featuredExt));
  
     $allowed = array('png', 'jpg', 'jpeg', 'gif','webp', 'bmp', 'svg+xml', 'tiff','ico');
-    
+
     if ($action_type === 'edit_product') { 
 
         $product_id = $_POST['product_id'];
         $product_name = test_input($_POST['product_name']);
         $sku = test_input($_POST['sku']);
         $price = test_input($_POST['price']);
-       
         $gallery_images = $_FILES['gallery'];
-         
         $selected_categories = isset($_POST['categories']) ? json_decode($_POST['categories'], true) : [];
         $selected_tags = isset($_POST['tags']) ? json_decode($_POST['tags'], true) : [];
 
@@ -72,7 +67,7 @@ if (isset($_POST['action_type'])) {
         
         if (in_array($featuredActualExt, $allowed)) {
             if($featuredError === 0){
-                if($featuredSize < 5 * 1024 * 1024){
+                if($featuredSize < 3 * 1024 * 1024){
                 $new_file_name = uniqid('', true).".".$featuredActualExt;
                 $file_tmp_name = $featured_image['tmp_name'];
                 $upload_dir = 'uploads/';
@@ -115,8 +110,7 @@ if (isset($_POST['action_type'])) {
         }
        
         
-        if (isset($_FILES['gallery'])) {
-            $gallery_images = $_FILES['gallery'];
+        if (isset($gallery_images)) {
             $new_file_names = []; 
             $gallery_filenames = [];
         
@@ -126,36 +120,48 @@ if (isset($_POST['action_type'])) {
                 mkdir($upload_dir, 0777, true); 
             }
 
-            if (isset($_FILES['gallery']) && $_FILES['gallery']['error'][0] == 0) {
+        if (isset($gallery_images) && $gallery_images['error'][0] == 0) {
 
             deleteProductGalleryProperties($product_id, $pdo);
 
             foreach ($gallery_images['name'] as $key => $name) {
+
                 $tmp_name = $gallery_images['tmp_name'][$key];
-                $file_name = basename($name);
-
-                if(!empty($file_name) && is_string($file_name)){
-                    $file_extension = pathinfo($file_name, PATHINFO_EXTENSION); 
-                    $new_gallery_file_name = str_replace('.', '', uniqid('gallery_', true)) . '.' . $file_extension;
-                    $new_file_names[] = $new_gallery_file_name; 
-
-                }
+                $gallerySize = $gallery_images['size'][$key];
+                $galleryError = $gallery_images['error'][$key];
+                $galleryType = $gallery_images['type'][$key];
+                $galleryExt = explode('.', $name);
+                $galleryActualExt = strtolower(end($galleryExt));
                 
-                $target_path = $upload_dir . $new_gallery_file_name;
+                if(in_array($galleryActualExt, $allowed)){
+                    if($galleryError === 0){
+                        if ($gallerySize < 3 * 1024 * 1024) {
+                            $new_gallery_file_name = uniqid('', true) . "." . $galleryActualExt;
+                            $target_path = $upload_dir . $new_gallery_file_name;
+                            $new_file_names[] = $new_gallery_file_name; 
 
-                if (move_uploaded_file($tmp_name, $target_path)) {
-
-                    addGalleryProperty($product_id, $new_gallery_file_name, $pdo);
-
+                       if (move_uploaded_file($tmp_name, $target_path)) {
+                           addGalleryProperty($product_id, $new_gallery_file_name, $pdo);
+                        }
+                    }else{
+                        $res = ['error' => 'Your files is too big!'];
+                        echo json_encode($res);
+                        return;
+                    }
+                    }else{
+                        $res = ['error' => 'There was an error uploading your file!'];
+                        echo json_encode($res);
+                        return;
+                    }
                 }
             }
         }
         else if(isset($_POST['imageHidden2']) && $_POST['imageHidden2'] === 'true'){
             deleteProductGalleryProperties($product_id, $pdo);
-
         }
       
         }
+
         if (!empty($selected_categories)) {
             $propertyType = 'category';  
            deleteProductProperty($product_id, $propertyType, $pdo);
@@ -202,8 +208,6 @@ if (isset($_POST['action_type'])) {
         $product_names = htmlspecialchars_decode($product_name ?? '', ENT_QUOTES);
         
         $featured_imageN = null;
-        $name_F = '';
-
         $name_F = $new_file_name;
         
         if (isset($featured_image) && $featured_image['error'] === UPLOAD_ERR_NO_FILE) {
@@ -247,8 +251,8 @@ if (isset($_POST['action_type'])) {
                   'featured_image' => $name_F, 
                   'featured_imageN' => $featured_imageN, 
                   'gallery_images' => $gallery_images, 
-                'gallery' => $new_file_names, 
-                'category' => $categoriesse, 
+                  'gallery' => $new_file_names, 
+                  'category' => $categoriesse, 
                   'tag' => $tagsse, 
 
                 ];
@@ -259,12 +263,9 @@ if (isset($_POST['action_type'])) {
        
         $selected_categories = isset($_POST['categories']) ? json_decode($_POST['categories'], true) : [];
         $selected_tags = isset($_POST['tags']) ? json_decode($_POST['tags'], true) : [];
-
         $product_name = test_input($_POST['product_name']);
         $sku = test_input($_POST['sku']);
         $price = test_input($_POST['price']);
-
-
         $gallery_images = $_FILES['gallery'];
         $errors = [];
         $responses = [];
@@ -311,7 +312,7 @@ if (isset($_POST['action_type'])) {
 
                 if (in_array($featuredActualExt, $allowed)) {
                     if($featuredError === 0){
-                        if($featuredSize < 5 * 1024 * 1024){
+                        if($featuredSize < 3 * 1024 * 1024){
                         $new_file_name = uniqid('', true).".".$featuredActualExt;
                         $file_tmp_name = $featured_image['tmp_name'];
                         $upload_dir = 'uploads/';
@@ -396,8 +397,6 @@ if (isset($_POST['action_type'])) {
             }
         }
 
-    
-
 
         $res = [
                  'status' => 200, 'action' => 'add',
@@ -411,8 +410,8 @@ if (isset($_POST['action_type'])) {
 
 
 if (isset($_GET['product_id'])) {
-    $product_id = (int)$_GET['product_id'];
 
+    $product_id = (int)$_GET['product_id'];
 
     $query = "SELECT * FROM products WHERE id = :product_id";
     $stmt = $pdo->prepare($query);
@@ -434,13 +433,11 @@ if (isset($_GET['product_id'])) {
         $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
         $stmt->execute();
         $categoriesse = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         
         $tagQuery = "SELECT id, name_ FROM property WHERE type_ = 'tag'";
         $tagStmt = $pdo->prepare($tagQuery);
         $tagStmt->execute();
         $tags = $tagStmt->fetchAll(PDO::FETCH_ASSOC);
-
         
         $tagSelected = "SELECT p.name_ FROM product_property pp
                     JOIN property p ON pp.property_id = p.id

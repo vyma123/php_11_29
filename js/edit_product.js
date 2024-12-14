@@ -75,10 +75,11 @@ let selectedTagNames = [];
                             $('.ui.small.image.box_input.box_featured').attr('style', 'display: block !important');
                         }
 
-                        $('#galleryPreviewContainer').empty();
+                    
+                        
                         
                         if(res.gallery.length > 0){
-                        console.log(res.gallery);
+                            $('#galleryPreviewContainer').empty();
 
                         $.each(res.gallery, function(index, image) {
                             var imagePath = 'uploads/' + image.name_; 
@@ -97,7 +98,9 @@ let selectedTagNames = [];
                             $('#galleryPreviewContainer').append(imgElement);
                         });
                     }else{
-                        console.log('cmnt');
+                        console.log('sfd');
+                        $('#galleryImage').attr('src', '');
+                        $('#galleryImage').hide();
                         $('.close_gallery').attr('style', 'display: none !important');
                         $('.ui.small.image.box_input.box_gallery').attr('style', 'display: block !important');
                     }
@@ -165,7 +168,6 @@ let selectedTagNames = [];
                 const currentSku = $('#sku').val().trim(); 
                 const currentPrice = $('#price').val().trim(); 
                 const currentFeatured_image = $('#uploadedImage').attr('src').replace('uploads/', '');
-                console.log(currentFeatured_image);
                 const currentGallery = $('#galleryPreviewContainer img').map(function() {
                     return $(this).attr('src').replace('uploads/', ''); 
                 }).get();
@@ -178,10 +180,7 @@ let selectedTagNames = [];
                 
                 const normalizedOldCategory = oldCategory || [];
                 const normalizedOldTag = oldTag || [];
-                
-                console.log( normalizedOldCategory);
-                console.log( currentCategory);
-
+            
 
                     if (oldProductName === currentProductName
                     && oldSku === currentSku
@@ -202,7 +201,9 @@ let selectedTagNames = [];
                         $('#checksku').addClass('d-none');  
                         $('#checknumber').addClass('d-none');      
                         $('#required_featured').addClass('d-none');
-
+                        $('#required_gallery').addClass('d-none');
+                        $('#limit_gallery').addClass('d-none');
+                        
 
                         console.log("No changes detected."); 
                         isProductNameUnchanged = true; 
@@ -245,6 +246,5 @@ let selectedTagNames = [];
     });
     
                                  
-    console.log('cm');
     
    

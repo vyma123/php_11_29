@@ -52,7 +52,8 @@ function validateForm(event) {
         $('#checkstring').addClass('d-none');  
         $('#okMessageProduct').removeClass('flexSPr');     
         $('#required_featured').addClass('d-none');
-        
+        $('#required_gallery').addClass('d-none');
+        $('#limit_gallery').addClass('d-none');
 
         hasError = true;
     } else {
@@ -69,7 +70,8 @@ if (sku.trim() !== "" && !regexsku.test(sku.trim())) {
     $('#noChanges').removeClass('flexWP');      
     $('#okMessageProduct').removeClass('flexSPr');   
     $('#required_featured').addClass('d-none');
-
+    $('#required_gallery').addClass('d-none');
+    $('#limit_gallery').addClass('d-none');
 
     hasError = true;
 } else {
@@ -81,6 +83,8 @@ if (priceInput.trim() !== "" && !regexprice.test(priceInput)) {
     $('#noChanges').removeClass('flexWP');  
     $('#okMessageProduct').removeClass('flexSPr');  
     $('#required_featured').addClass('d-none');
+    $('#required_gallery').addClass('d-none');
+    $('#limit_gallery').addClass('d-none');
 
     hasError = true;
 } else {
@@ -196,17 +200,25 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
     });
 
     const uploadedImage = document.getElementById('uploadedImage');
-    if(uploadedImage){
+    if(uploadedImage){      
+        console.log('fff');
+
         let isHidden = uploadedImage.style.display === 'none';
         formData.append('imageHidden', isHidden ? 'true' : 'false');
     }
     
-     const galleryImage = document.querySelector('#galleryPreviewContainer img');
+     const galleryImage = document.getElementById('galleryImage');
+     const galleryPreviewContainer = document.getElementById('galleryPreviewContainer');
+
      if (galleryImage) {
+        console.log('bsdbf');
+        
          let isHidden2 = galleryImage.style.display === 'none';
          formData.append('imageHidden2', isHidden2 ? 'true' : 'false');
 
-     }
+     }else if(galleryPreviewContainer && galleryPreviewContainer.childElementCount === 0){
+        formData.append('imageHidden2', 'true'); 
+    }
 
     formData.append('categories', JSON.stringify(categories));
     formData.append('tags', JSON.stringify(tags));
@@ -256,7 +268,6 @@ $(document).off('submit', '#saveProduct').on('submit', '#saveProduct', function(
                     }, 200);
                     
                     $('#mytable').load(location.href + " #mytable"); 
-                    
 
 
 				}else if(res.action == 'edit'){

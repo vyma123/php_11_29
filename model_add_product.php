@@ -40,7 +40,6 @@
       <p class="required d-none" id="checksku">Don't allow special char and Whitespace is not allowed..</p>
       <p class="required d-none" id="skuexist">Oops! This SKU is already taken.</p>
 
-
     </div>
     <div class="field">
       <label class="price_label">Price  </label>
