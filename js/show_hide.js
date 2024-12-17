@@ -176,7 +176,6 @@ $('#gallery').on('change', function () {
                 galleryPreviewContainer.append(img);
             };
             reader.readAsDataURL(file); 
-     
     }
 });
 

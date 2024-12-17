@@ -62,7 +62,6 @@ if (isset($_POST['action_type'])) {
             return;
         }
        
-            
         $new_file_name = '';
         
         if (in_array($featuredActualExt, $allowed)) {
@@ -165,7 +164,6 @@ if (isset($_POST['action_type'])) {
         if (!empty($selected_categories)) {
             $propertyType = 'category';  
            deleteProductProperty($product_id, $propertyType, $pdo);
-
         }
 
         if (!empty($selected_categories) && is_array($selected_categories[0])) {
@@ -203,7 +201,6 @@ if (isset($_POST['action_type'])) {
         $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
         $stmt->execute();
         $tagsse = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         
         $product_names = htmlspecialchars_decode($product_name ?? '', ENT_QUOTES);
         
@@ -254,7 +251,6 @@ if (isset($_POST['action_type'])) {
                   'gallery' => $new_file_names, 
                   'category' => $categoriesse, 
                   'tag' => $tagsse, 
-
                 ];
          echo json_encode($res);
          return;
@@ -305,6 +301,33 @@ if (isset($_POST['action_type'])) {
             ];
             echo json_encode($res);
             return;
+        }
+
+        if (!empty($gallery_images['name'][0])) {
+            foreach ($gallery_images['name'] as $key => $name) {
+                    $tmp_name = $gallery_images['tmp_name'][$key];
+                    $gallerySize = $gallery_images['size'][$key];
+                    $galleryError = $gallery_images['error'][$key];
+                    $galleryType = $gallery_images['type'][$key];
+                    $galleryExt = explode('.', $name);
+                    $galleryActualExt = strtolower(end($galleryExt));
+
+                    if(in_array($galleryActualExt, $allowed)){
+                        if($galleryError === 0){
+                            if ($gallerySize < 3 * 1024 * 1024) {
+                    
+                        }else{
+                            $res = ['error' => 'Your files is too big!'];
+                            echo json_encode($res);
+                            return;
+                        }
+                         }else{
+                            $res = ['error' => 'There was an error uploading your file!'];
+                            echo json_encode($res);
+                            return;
+                        }
+                    }
+            }
         }
 
         $new_file_name = '';
@@ -363,40 +386,59 @@ if (isset($_POST['action_type'])) {
                 if (!empty($selected_tags) && is_array($selected_tags[0])) {
                     $selected_tags = $selected_tags[0];
                 }
-            
 
         addProductProperties($product_id, $selected_tags, $pdo, 'tag');
 
         $responses[] = ['status' => 200, 'message' => 'Tags added successfully.'];
 
+
+
+
+       
+
         if (!empty($gallery_images['name'][0])) {
-            $unique_images = []; 
-            
-            foreach ($gallery_images['error'] as $key => $error) {
-                if ($error === UPLOAD_ERR_OK) {
-                    $gallery_file_name = $gallery_images['name'][$key];
+            $unique_images = [];  
+            foreach ($gallery_images['name'] as $key => $name) {
 
-                    $file_extension = pathinfo($gallery_file_name, PATHINFO_EXTENSION);
-                    $new_gallery_file_name = str_replace('.', '', uniqid('gallery_', true)) . '.' . $file_extension;
-                    
-                    if (!in_array($new_gallery_file_name, $unique_images)) {
+                    $tmp_name = $gallery_images['tmp_name'][$key];
+                    $gallerySize = $gallery_images['size'][$key];
+                    $galleryError = $gallery_images['error'][$key];
+                    $galleryType = $gallery_images['type'][$key];
+                    $galleryExt = explode('.', $name);
+                    $galleryActualExt = strtolower(end($galleryExt));
 
-                        move_uploaded_file($gallery_images['tmp_name'][$key], 'uploads/' . $new_gallery_file_name);
-        
-                        $property_id = insert_property($pdo, 'gallery', $new_gallery_file_name);
-                        add_product_property($pdo, $product_id, $property_id);
-        
-                        $responses[] = [
-                            'status' => 200,
-                            'message' => 'Gallery image ' . $new_gallery_file_name . ' uploaded successfully.'
-                        ];
-        
-                        $unique_images[] = $new_gallery_file_name;
+                    $upload_dir = 'uploads/';
+
+                    if (!file_exists($upload_dir)) {
+                        mkdir($upload_dir, 0777, true); 
                     }
-                }
+
+                    if(in_array($galleryActualExt, $allowed)){
+                        if($galleryError === 0){
+                            if ($gallerySize < 1 * 1024 * 1024) {
+                                $new_gallery_file_name = uniqid('', true) . "." . $galleryActualExt;
+                                $target_path = $upload_dir . $new_gallery_file_name;
+                                $new_file_names[] = $new_gallery_file_name; 
+    
+                           if (move_uploaded_file($tmp_name, $target_path)) {
+                               $property_id = insert_property($pdo, 'gallery', $new_gallery_file_name);
+                               add_product_property($pdo, $product_id, $property_id);
+                            }
+                        }else{
+                            $res = ['error' => 'Your files is too big!'];
+                            echo json_encode($res);
+                            return;
+                        }
+                         }else{
+                            $res = ['error' => 'There was an error uploading your file!'];
+                            echo json_encode($res);
+                            return;
+                        }
+                        $unique_images[] = $new_gallery_file_name;
+
+                    }
             }
         }
-
 
         $res = [
                  'status' => 200, 'action' => 'add',
@@ -464,7 +506,6 @@ if (isset($_GET['product_id'])) {
             'gallery' => $gallery,
             'categoriesse' => $categoriesse,
             'tagsse' => $tagsse,
-
         ];
         
     } else {
