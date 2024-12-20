@@ -390,10 +390,6 @@ if (isset($_POST['action_type'])) {
         addProductProperties($product_id, $selected_tags, $pdo, 'tag');
 
         $responses[] = ['status' => 200, 'message' => 'Tags added successfully.'];
-
-
-
-
        
 
         if (!empty($gallery_images['name'][0])) {

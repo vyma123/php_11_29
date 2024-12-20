@@ -23,9 +23,18 @@ $response = curl_exec($curl);
 
 curl_close($curl);
 
+
+
+
+
 $doc = new DOMDocument();
 libxml_use_internal_errors(true); 
 $doc->loadHTML($response);
+
+
+
+
+
 
 $titles = [];  
 $colorArray = [];
@@ -34,22 +43,21 @@ $sizeArray = [];
 $imageSrcGalleryArray = [];
 
 
-$h1Tags = $doc->getElementsByTagName('h1');
+preg_match_all('/<h1[^>]*>(.*?)<\/h1>/si', $response, $matches);
 
-if ($h1Tags->length > 0) {
-    $titles[] = $h1Tags->item(0)->nodeValue;
-
+if (!empty($matches[1])) {
+    $titles = array_map('html_entity_decode', $matches[1]);
+    // print_r($titles);  
 } else {
     echo "NO H1.";
 }
 
-$xpath = new DOMXPath($doc);
-$expProductElement = $xpath->query('//div[@exp_product]')->item(0);
-if ($expProductElement) {
-    $productId = $expProductElement->getAttribute('exp_product');
-    preg_match('/productId=(\d+)/', $productId, $matches);
-    if (isset($matches[1])) {
-        echo "Product ID: " . $matches[1] . "\n";
+preg_match('/<div[^>]*exp_product="([^"]*)"[^>]*>/i', $response, $matches);
+
+if (!empty($matches[1])) {
+    $productId =  $matches[1]; 
+    if (preg_match('/productId=(\d+)/', $productId, $idMatches)) {
+        echo "Product ID: " . $idMatches[1] . "\n";
     } else {
         echo "no productId.\n";
     }
@@ -57,60 +65,82 @@ if ($expProductElement) {
     echo "no exp_product.\n";
 }
 
-$colorElements = $xpath->query('(//div[@class="SnowSku_SkuPropertyItem__skuProp__1lob1"]/div)[1]//span[2]');
-if ($colorElements->length > 0) {
-    foreach ($colorElements as $colorElement) {
-        $colorArray[] = $colorElement->nodeValue;
-    }
+preg_match_all('/<div[^>]*class="SnowSku_SkuPropertyItem__skuProp__1lob1"[^>]*>.*?<span[^>]*class=".*?propName__1lob1">Color:<\/span>\s*<span[^>]*class=".*?propName__1lob1">([^<]+)<\/span>/s', $response, $matches);
 
+if (!empty($matches[1])) {
+    $colorArrays = $matches[1];
+    foreach ($colorArrays as $color) {
+        $colorArray[] = $color;
+    }
 } else {
-    echo "no color.\n";
+    echo "No colors found.\n";
 }
 
-$priceElements = $xpath->query('//div[contains(@class, "HazeProductPrice_SnowPrice__mainS")]');
-if ($priceElements->length > 0) {
-    foreach ($priceElements as $priceElement) {
-        $priceArray[] = $priceElement->nodeValue;
-    }
-} else {
-    echo "no price.\n";
-}
+preg_match_all('/<div[^>]*class="HazeProductPrice_SnowPrice__mainS__1cbja"[^>]*>([^<]+)<\/div>/s', $response, $matches);
 
-$sizeElements = $xpath->query('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/span[2]');
-if ($sizeElements->length > 0) {
-    foreach ($sizeElements as $sizeElement) {
-        $sizeArray[] = $sizeElement->nodeValue;
+if (!empty($matches[1])) {
+    $priceArray = $matches[1]; 
+    foreach ($priceArray as $price) {
+        // echo $price ;
     }
 } else {
-    echo "no size.\n";
+    echo "No price found.\n";
 }
 
 
-$imageElements = $xpath->query('//ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img');
-if ($imageElements->length > 0) {
-    foreach ($imageElements as $imageElement) {
-        if ($imageElement instanceof DOMElement) {
-            $imageSrcArray[] = $imageElement->getAttribute('src');
-        }
-    }
+preg_match_all('/<span class="SnowSku_SkuPropertyItem__optionText__1lob1">(.*?)<\/span>/', $response, $matches);
 
+if (!empty($matches[1])) {
+    $sizeArray = $matches[1];
+    foreach ($sizeArray as $size) {
+        // echo $size . "\n";
+    }
 } else {
-    echo "no image.\n";
+    echo "No span found.\n";
 }
 
-$imageGallery = $xpath->query('//div[contains(@class, "SnowProductGallery__previews")]//div/picture/img');
-if ($imageGallery->length > 0) {
-    foreach ($imageGallery as $gallery) {
-        if ($gallery instanceof DOMElement) {
-            $imageSrcGalleryArray[] = $gallery->getAttribute('src');
-        }
-    }
+$xpath = new DOMXPath($doc);
 
+
+// //ul[@class="SnowSku_SkuPropertyItem__optionList__1lob1"]/li/button/picture/img
+preg_match_all('/<ul[^>]*class="SnowSku_SkuPropertyItem__optionList__1lob1"[^>]*>.*?<li[^>]*>.*?<button[^>]*>.*?<picture[^>]*>.*?<img[^>]*src="([^"]+)"/s', $response, $matches);
+
+if (!empty($matches[1])) {
+    $imageSrcArray = $matches[1];
+    foreach ($imageSrcArray as $src) {
+        // echo $src . "\n";
+    }
 } else {
-    echo "no image.\n";
+    echo "No image found.\n";
 }
 
-$productId = isset($matches[1]) ? $matches[1] : null;
+
+preg_match_all('/<div[^>]*class="SnowProductGallery_SnowProductGallery__previewItem__z6imb[^"]*"[^>]*>.*?<picture[^>]*>.*?<img[^>]*src="([^"]+)"/s', $response, $matches);
+
+if (!empty($matches[1])) {
+    foreach ($matches[1] as $src) {
+        $imageSrcGalleryArray[] = $src;
+        
+    }
+} else {
+    echo "No image found.\n";
+}
+
+
+
+// $imageGallery = $xpath->query('//div[contains(@class, "SnowProductGallery__previews")]//div/picture/img');
+// if ($imageGallery->length > 0) {
+//     foreach ($imageGallery as $gallery) {
+//         if ($gallery instanceof DOMElement) {
+//             $imageSrcGalleryArray[] = $gallery->getAttribute('src');
+//         }
+//     }
+
+// } else {
+//     echo "no image.\n";
+// }
+
+$productId = isset($matches[1]) ? (int)  $matches[1] : null;
 
 
 function convertPriceToUSD($rubPrice) {
@@ -158,10 +188,8 @@ foreach ($titles as $key => $title) {
 
     foreach ($colorArray as $color) {
 
-
         foreach ($sizeArray as $size) {
-            $name = $title . ' ' . $color . ' ' . $size;
-
+            $name =  $title . ' ' . $color . ' ' . $size;
 
             $productId++;
 
