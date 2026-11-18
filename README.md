@@ -1,4 +1,5 @@
-Quản lý sản phẩm PHP
+Quản lý sản phẩm PHP.
+
 Mô tả các chức năng:
 - xây dựng trong xampp.
 - thư viện: css - semantic, jquery.
@@ -29,5 +30,3 @@ tạo = tên sản phẩm cha + tên các atribute; ảnh feature của các s�
 phẩm đươc tạo là ảnh của sản phẩm con tương ứng.
 - Lấy theo ngôn ngữ en, convert giá sang USD theo tỷ lệ 1RUB = 0.01USD
 - Update thông tin theo website nếu sp đã tồn tại
-Getting started: 
-…
