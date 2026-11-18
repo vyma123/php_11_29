@@ -1,4 +1,5 @@
-Quản lý sản phẩm PHP.
+Xây dựng trang Quản lý sản phẩm PHP.
+Link docs: https://docs.google.com/document/d/1Tt52aI58xFPa1xGsztUYEiptVVjkZVaw/edit?usp=drivesdk&ouid=109913212146486169658&rtpof=true&sd=true
 
 Mô tả các chức năng:
 - xây dựng trong xampp.
